@@ -20,7 +20,7 @@ import Exercise from '@/components/Exercise.astro';
 
 ## 4.1 函数的极值及其必要条件
 
-设有函数 $f: I \to \mathbf{R}, x_0 \in I$，若 $\exists \delta > 0$，使得 $\forall x \in U(x_0, \delta) \subseteq I$，恒有 $f(x) \geqslant f(x_0) \ (\leqslant f(x_0))$，则称 $f$ 在 $x_0$ 取得**极小（大）值** $f(x_0)$。$f$ 的极小值与极大值统称为 $f$ 的**极值**，使 $f$ 取得极值的点 $x_0$ 称为 $f$ 的**极值点**。
+设有函数 $f: I \to \mathbf{R}, x_0 \in I$，若 $\exists \delta > 0$，使得 $\forall x \in U(x_0, \delta) \subseteq I$，恒有 $f(x) \geqslant f(x_0)$（$\leqslant f(x_0)$），则称 $f$ 在 $x_0$ 取得**极小（大）值** $f(x_0)$。$f$ 的极小值与极大值统称为 $f$ 的**极值**，使 $f$ 取得极值的点 $x_0$ 称为 $f$ 的**极值点**。
 
 <figure class="vp-figure">
   <img src="images/fig_2_12.png" alt="图 2.12" />
@@ -33,10 +33,10 @@ import Exercise from '@/components/Exercise.astro';
 
 设函数 $f$ 在 $(a, b)$ 内可导，从图 2.12 易见，曲线 $y = f(x)$ 上与 $f$ 的极值点 $x_1, x_2, x_3, x_4, x_5$ 相对应的点处有水平切线，受这个事实的启发得到下面的定理。
 
-<Knowledge title="定理 4.1 Fermat 定理">
+<Knowledge title="定理 4.1 (Fermat 定理)">
 若函数 $f: (a, b) \to \mathbf{R}$ 在 $x_0 \in (a, b)$ 处取得极值，且 $f$ 在 $x_0$ 处可导，则 $f'(x_0) = 0$。
 
-<SideNote title="思路分析">
+<SideNote title="注意">
 为了利用 $f$ 在 $x_0$ 处取极大值且可导这两个已知条件来证明 $f'(x_0) = 0$，自然应当用导数的定义，但由于直接用导数定义很难得出此结论，所以我们转而证明 $f$ 在 $x_0$ 的左导数 $f'_-(x_0) \geqslant 0$，右导数 $f'_+(x_0) \leqslant 0$。由于 $f$ 在 $x_0$ 处可导，所以必有 $f'(x_0) = 0$。
 </SideNote>
 
@@ -84,7 +84,7 @@ Rolle 定理也是受一个简单的几何事实的启发得到的。设函数 $
 说明将 Rolle 定理中的条件(1)与(2)换成“$f$ 在闭区间 $[a, b]$ 上可导”，定理的结论仍然成立，试问条件(1)与(2)换成后者好吗？有什么缺陷？
 </SideNote>
 
-<Knowledge title="定理 4.2 Rolle 定理">
+<Knowledge title="定理 4.2 (Rolle 定理)">
 若函数 $f: [a, b] \to \mathbf{R}$ 满足下列条件：
 
 (1) $f$ 在 $[a, b]$ 上连续；
@@ -151,7 +151,7 @@ $$
 </Example>
 
 <SideNote title="注意">
-Rolle 定理的三个条件中只要有一个不满足，都不能保证定理的结论成立。例如，在图 2.14 的 (a), (b) 与 (c) 中，分别画出了不满足条件 (1), (2) 与 (3) 之一的三个函数的图像，显然，这三个函数都不存在使定理结论成立的 $\xi$。
+Rolle 定理的三个条件中只要有一个不满足，都不能保证定理的结论成立。例如，在图 2.14 的 (a)、(b) 与 (c) 中，分别画出了不满足条件 (1)、(2) 与 (3) 之一的三个函数的图像，显然，这三个函数都不存在使定理结论成立的 $\xi$。
 </SideNote>
 
 在图 2.14 的 (c) 中，由于 $f(a) \neq f(b)$，曲线 $y = f(x)$ 上没有一点的切线平行于 $x$ 轴。但是，不难看到，曲线上至少有一点（如点 $P_1$ 或 $P_2$）处的切线平行于弦 $AB$。由于弦 $AB$ 的斜率是 $\frac{f(b) - f(a)}{b - a}$，该曲线在点 $P_1$ 与 $P_2$ 处切线的斜率为 $f'(\xi)$，故有
@@ -179,17 +179,20 @@ $$
 
 由此，我们得到下面的重要定理：
 
-<Knowledge title="定理 4.3 Lagrange 定理">
+<Knowledge title="定理 4.3 (Lagrange 定理)">
 若函数 $f: [a, b] \to \mathbf{R}$ 满足下列条件：
+
 (1) $f$ 在 $[a, b]$ 上连续；
+
 (2) $f$ 在 $(a, b)$ 内可导，
+
 则至少存在一点 $\xi \in (a, b)$，使
 $$
-f(b) - f(a) = f'(\xi)(b - a).\tag{4.1}
+f(b) - f(a) = f'(\xi)(b - a). \tag{4.1}
 $$
 
-<SideNote title="思路分析">
-定理 4.3 的证明思路也是将要证明的等式(4.1)变形，构造一个满足 Rolle 定理条件的辅助函数，关键在于如何构造符合要求的辅助函数。通过将要证明的结论变形、分析是常用的一种方法，称为分析法；另一种是几何法，定理 4.3 证明之后给出的另一个辅助函数就是受几何上的启示构造出来的。
+<SideNote title="注">
+定理 4.3 的证明思路也是将要证明的等式 (4.1) 变形，构造一个满足 Rolle 定理条件的辅助函数，关键在于如何构造符合要求的辅助函数。通过将要证明的结论变形、分析是常用的一种方法，称为分析法，另一种是几何法，定理 4.3 证明之后给出的另一个辅助函数就是受几何上的启示构造出来的。
 </SideNote>
 
 <Solution title="证明">
@@ -203,7 +206,7 @@ $$
 $$
 所以，只要证明 $F(x) = \frac{f(b) - f(a)}{b - a} x - f(x)$ 在 $[a, b]$ 上满足 Rolle 定理的条件就行了。
 
-**作辅助函数**
+**证** 作辅助函数
 $$
 F(x) = \frac{f(b) - f(a)}{b - a} x - f(x).
 $$
@@ -222,7 +225,6 @@ $$
 </Solution>
 </Knowledge>
 
-<SideNote title="几何辅助函数">
 证明定理 4.3 的辅助函数的选取不是唯一的。事实上，由于
 $$
 \left[ f(x) - f(a) - \frac{f(b) - f(a)}{b - a}(x - a) \right]'\Bigg|_{x = \xi} = f'(\xi) - \frac{f(b) - f(a)}{b - a},
@@ -232,11 +234,10 @@ $$
 F(x) = f(x) - \left[ f(a) + \frac{f(b) - f(a)}{b - a}(x - a) \right]
 $$
 作为辅助函数。而且此函数就是曲线 $y = f(x)$ 与弦 $AB$ 方程之差，显然满足 Rolle 定理的条件。
-</SideNote>
 
 在 Lagrange 定理中，若 $f(a) = f(b)$，则有 $f'(\xi) = 0$。因此，Rolle 定理是 Lagrange 定理的特例，而 Lagrange 定理是 Rolle 定理的推广。
 
-公式(4.1)称为 **Lagrange 公式**。将两边同乘 $-1$ 得
+公式 (4.1) 称为 **Lagrange 公式**。将两边同乘 $-1$ 得
 $$
 f(a) - f(b) = f'(\xi)(a - b),
 $$
@@ -244,14 +245,14 @@ $$
 
 Lagrange 公式还可以写成其他形式。由于 $\xi \in (a, b)$，所以 $0 < \frac{\xi - a}{b - a} < 1$。令 $\theta = \frac{\xi - a}{b - a}$，则 $\xi = a + \theta(b - a)$，于是有
 $$
-f(b) - f(a) = f'[a + \theta(b - a)](b - a) \quad (0 < \theta < 1).\tag{4.2}
+f(b) - f(a) = f'[a + \theta(b - a)](b - a) \quad (0 < \theta < 1). \tag{4.2}
 $$
 
 如果取 $a = x, b = x + \Delta x$，Lagrange 公式又可写成
 $$
-f(x + \Delta x) - f(x) = f'(x + \theta\Delta x)\Delta x \quad (0 < \theta < 1),\tag{4.3}
+f(x + \Delta x) - f(x) = f'(x + \theta\Delta x)\Delta x \quad (0 < \theta < 1), \tag{4.3}
 $$
-常称(4.3)式为**有限改变量公式**。它建立了函数 $y = f(x)$ 在区间上的改变量与导数之间的关系，使我们能够用导数研究函数在区间上的变化性态。
+常称 (4.3) 式为**有限改变量公式**。它建立了函数 $y = f(x)$ 在区间上的改变量与导数之间的关系，使我们能够用导数研究函数在区间上的变化性态。
 
 <Knowledge title="推论 4.2">
 设 $f: I \to \mathbf{R}$ 在 $I$ 上连续，在 $I$ 内可导，则在 $I$ 内 $f'(x) \equiv 0$ 的充要条件为 $f$ 在 $I$ 上是常数。
@@ -259,11 +260,11 @@ $$
 <Solution title="证明">
 充分性是显然的，下面证明必要性。
 
-任取 $x_1, x_2 \in I$，在闭区间 $[x_1, x_2]$ 上对 $f$ 应用 Lagrange 定理，存在 $\xi \in (x_1, x_2)$，使
+任取 $x_1, x_2 \in I$，在闭区间 $[x_1, x_2]$ 上对 $f$ 应用 Lagrange 定理，存在 $\xi \in (x_1, x_2) \subseteq (a, b)$，使
 $$
 f(x_2) - f(x_1) = f'(\xi)(x_2 - x_1) = 0,
 $$
-因此，$f(x_1) = f(x_2)$。由 $x_1, x_2$ 的任意性知 $f$ 在 $I$ 上是常数。
+因此 $f(x_1) = f(x_2)$。由 $x_1, x_2$ 的任意性知 $f$ 在 $I$ 上是常数。
 </Solution>
 </Knowledge>
 
@@ -275,7 +276,7 @@ $$
 其中 $A$ 为有限或无限。
 
 <Solution title="证明">
-根据公式(4.3)，我们有
+根据公式 (4.3)，我们有
 $$
 \frac{f(x_0 + \Delta x) - f(x_0)}{\Delta x} = f'(x_0 + \theta\Delta x) \quad (0 < \theta < 1).
 $$
@@ -297,7 +298,7 @@ $$
 f(x) = \begin{cases}
 x^2, & x < 0, \\
 0, & x = 0, \\
-x \sin x, & x > 0,
+x\sin x, & x > 0,
 \end{cases}
 $$
 求 $f'(x)$。
@@ -327,17 +328,17 @@ Lagrange 定理是最常用的一个微分中值定理，具有重要的理论�
 <Example title="例 4.4">
 证明：当 $x > 0$ 时，
 $$
-\frac{x}{1 + x} < \ln (1 + x) < x.
+\frac{x}{1 + x} < \ln(1 + x) < x.
 $$
 
 <Solution title="证">
-由于 $\ln (1 + x) = \ln (1 + x) - \ln 1$，所以为了证明本题中的不等式，只要取 $f(t) = \ln (1 + t)$ 为辅助函数，并对该函数在 $[0, x]$ 上应用 Lagrange 定理。容易验证 $f(t)$ 在 $[0, x]$ 上满足 Lagrange 定理的条件，因而至少存在一点 $\xi \in (0, x)$，使
+由于 $\ln(1 + x) = \ln(1 + x) - \ln 1$，所以为了证明本题中的不等式，只要取 $f(t) = \ln(1 + t)$ 为辅助函数，并对该函数在 $[0, x]$ 上应用 Lagrange 定理。容易验证 $f(t)$ 在 $[0, x]$ 上满足 Lagrange 定理的条件，因而至少存在一点 $\xi \in (0, x)$，使
 $$
 f(x) - f(0) = f'(\xi)(x - 0),
 $$
 即
 $$
-\ln (1 + x) = \frac{x}{1 + \xi}.
+\ln(1 + x) = \frac{x}{1 + \xi}.
 $$
 又因为 $\xi \in (0, x)$，故有
 $$
@@ -345,14 +346,12 @@ $$
 $$
 从而有
 $$
-\frac{x}{1 + x} < \ln (1 + x) < x \quad (x > 0).
+\frac{x}{1 + x} < \ln(1 + x) < x \quad (x > 0).
 $$
+
+也可取 $f(t) = \ln t \ (t \in [1, 1 + x])$ 作为辅助函数来证明此不等式。
 </Solution>
 </Example>
-
-<SideNote title="另法提示">
-例 4.4 也可取 $f(t) = \ln t \ (t \in [1, 1 + x])$ 作为辅助函数来证明此不等式。
-</SideNote>
 
 <QRCodeVideo id="2.4.3" title="Lagrange 中值定理的含义与应用" url="http://2d.hep.cn/1254051/26" />
 
@@ -360,7 +359,7 @@ $$
 设函数 $f$ 在 $[0, 1]$ 上可导，值域为 $(0, 1)$，并且 $\forall x \in (0, 1), f'(x) \neq 1$，证明 $f$ 有唯一不动点 $c \in (0, 1)$。
 
 <Solution title="证">
-由于 $f$ 的不动点是指满足方程 $f(x) = x$ 的点 $c$，所以令 $F(x) = f(x) - x$，只要证明存在唯一的 $c$，使 $f(c) - c = 0$。
+由于 $f$ 的不动点是指满足方程 $f(x) = x$ 的点 $c$，所以令 $F(x) = f(x) - x$，只要证明存在唯一的 $c$，使 $F(c) = 0$。
 
 易见 $F$ 在 $[0, 1]$ 上连续，且 $F(0) = f(0) > 0, F(1) = f(1) - 1 < 0$。由零点定理，至少存在一个 $c \in (0, 1)$，使 $F(c) = 0$，即 $f(c) = c$，所以 $f$ 在 $(0, 1)$ 内至少有一个不动点。
 
@@ -372,16 +371,19 @@ $$
 </Solution>
 </Example>
 
-<Knowledge title="定理 4.4 Cauchy 定理">
+<Knowledge title="定理 4.4 (Cauchy 定理)">
 设函数 $f, g: [a, b] \to \mathbf{R}$ 满足下列条件：
+
 (1) $f, g$ 在 $[a, b]$ 上连续；
+
 (2) $f, g$ 在 $(a, b)$ 内可导，并且 $\forall x \in (a, b), g'(x) \neq 0$，
+
 则至少存在一点 $\xi \in (a, b)$，使
 $$
-\frac{f(b) - f(a)}{g(b) - g(a)} = \frac{f'(\xi)}{g'(\xi)}.\tag{4.4}
+\frac{f(b) - f(a)}{g(b) - g(a)} = \frac{f'(\xi)}{g'(\xi)}. \tag{4.4}
 $$
 
-<SideNote title="几何解释">
+<SideNote title="注">
 将定理 4.4 中的函数 $f$ 与 $g$ 的自变量用字母 $t$ 表示，则 $x = g(t)$ 与 $y = f(t) \ (t \in [a, b])$ 就是一条以 $A(g(a), f(a)), B(g(b), f(b))$ 为端点的平面曲线 $C$ 的参数方程。(4.4) 式左端就是弦 $AB$ 的斜率，而右端则是 $C$ 上点 $P(g(\xi), f(\xi))$ 处的切线的斜率。因此 Cauchy 公式在几何上就表示在 $C$ 上至少有一点 $P$，使 $C$ 在 $P$ 处的切线平行于弦 $AB$，也就是 Lagrange 公式表示的几何事实的参数形式。
 </SideNote>
 
@@ -390,13 +392,13 @@ $$
 
 为证明定理中的结论，只要证明辅助函数
 $$
-F(x) = [f(b) - f(a)]g(x) - [g(b) - g(a)]f(x)
+F(x) = [f(b) - f(a)] g(x) - [g(b) - g(a)] f(x)
 $$
 的导函数在 $(a, b)$ 内有零点。容易验证 $F(x)$ 满足 Rolle 定理的条件，因此，至少存在一点 $\xi \in (a, b)$ 使
 $$
-F'(x) = [f(b) - f(a)]g'(\xi) - [g(b) - g(a)]f'(\xi) = 0.
+F'(x) = [f(b) - f(a)] g'(\xi) - [g(b) - g(a)] f'(\xi) = 0.
 $$
-由于 $g'(\xi) \neq 0$，将上式变形即得所要证明的等式(4.4)。
+由于 $g'(\xi) \neq 0$，将上式变形即得所要证明的等式 (4.4)。
 </Solution>
 </Knowledge>
 
@@ -417,7 +419,7 @@ $$
 
 则
 $$
-\lim_{x \to x_0^+} \frac{f(x)}{g(x)} = \lim_{x \to x_0^+} \frac{f'(x)}{g'(x)} = a.\tag{4.5}
+\lim_{x \to x_0^+} \frac{f(x)}{g(x)} = \lim_{x \to x_0^+} \frac{f'(x)}{g'(x)} = a. \tag{4.5}
 $$
 
 <Solution title="证明">
@@ -434,13 +436,13 @@ $$
 </Solution>
 </Knowledge>
 
-由证明过程不难看出，定理 4.5 对于当 $x \to x_0^-, x \to x_0$ 等情形也可得到相应的结论。如果 $x \to \infty \ (\pm\infty)$，那么可通过变量代换 $x = \frac{1}{t}$ 化为 $t \to 0$ 的情形，得到类似的结论。这里不再一一叙述和推证。
+由证明过程不难看出，定理 4.5 对于当 $x \to x_0^-, x \to x_0$ 等情形也可得到相应结论。如果 $x \to \infty \ (\pm\infty)$，那么可通过变量代换 $x = \frac{1}{t}$ 化为 $t \to 0$ 的情形，得到类似结论。这里不再一一叙述和推证。
 
 <Example title="例 4.6">
 求 $\lim_{x \to 0} \frac{\tan x - x}{x - \sin x}$。
 
 <SideNote title="注意">
-在应用 L'Hospital 法则的时候，应检查 $f, g$ 是否满足条件(1), (2)。如果用一次 L'Hospital 法则后，得到的极限 $\lim_{x \to x_0} \frac{f'(x)}{g'(x)}$ 仍然属于 $\frac{0}{0}$ 型不定式，只要 $f', g'$ 仍满足定理 4.5 中的相应条件，那么还可继续使用该法则。
+在应用 L'Hospital 法则的时候，应检查 $f, g$ 是否满足条件(1)，(2)。如果用一次 L'Hospital 法则后，得到的极限 $\lim_{x \to x_0} \frac{f'(x)}{g'(x)}$ 仍然属于 $\frac{0}{0}$ 型不定式，只要 $f', g'$ 仍满足定理 4.5 中的相应条件，那么还可以继续使用该法则。
 </SideNote>
 
 <Solution title="解">
@@ -450,29 +452,24 @@ $$
 $$
 由于上式右端仍为 $\frac{0}{0}$ 型，且分子分母仍满足定理 4.5 的条件(1)(2)，故可再次使用该法则，得
 $$
-\text{原式} = \lim_{x \to 0} \frac{2\sec^2 x \tan x}{\sin x} = 2 \lim_{x \to 0} \sec^2 x = 2.
+\text{原式} = \lim_{x \to 0} \frac{2\sec^2 x \tan x}{\sin x} = 2\lim_{x \to 0} \sec^2 x = 2.
 $$
 </Solution>
 </Example>
 
-<SideNote title="提示">
-读者可能注意到，上面第二个等式利用到了当 $x \to 0$ 时 $\tan x$ 与 $\sin x$ 是等价无穷小这个事实。
-</SideNote>
-
-<Example title="例 4.7">
-求 $\lim_{x \to 0} \frac{2\mathrm{e}^{2x} - \mathrm{e}^x - 3x - 1}{(\mathrm{e}^x - 1)^2\mathrm{e}^x}$。
+读者可能注意到，上面第二个等式利用到了当 $x \to x_0$ 时 $\tan x$ 与 $\sin x$ 是等价无穷小这个事实。
 
 <SideNote title="注意">
 与通常求极限过程一样，在应用 L'Hospital 法则时，前面讲过的消去公因子与无穷小等价代换等方法可以同时使用。而且，若式中含有极限不为零的因子，则可先求出该因子的极限值。这样做可以使余下的不定式比较简单，便于继续使用该法则。
 </SideNote>
 
+<Example title="例 4.7">
+求 $\lim_{x \to 0} \frac{2e^{2x} - e^x - 3x - 1}{(e^x - 1)^2 e^x}$。
+
 <Solution title="解">
-由于当 $x \to 0$ 时，$\mathrm{e}^x \to 1$，且 $\mathrm{e}^x - 1 \sim x$，所以
+由于当 $x \to 0$ 时，$e^x \to 1$，且 $e^x - 1 \sim x$，所以
 $$
-\begin{aligned}
-\text{原式} &= \lim_{x \to 0} \frac{2\mathrm{e}^{2x} - \mathrm{e}^x - 3x - 1}{x^2} = \lim_{x \to 0} \frac{4\mathrm{e}^{2x} - \mathrm{e}^x - 3}{2x} \\
-&= \frac{1}{2} \lim_{x \to 0} \frac{8\mathrm{e}^{2x} - \mathrm{e}^x}{1} = \frac{7}{2}.
-\end{aligned}
+\text{原式} = \lim_{x \to 0} \frac{2e^{2x} - e^x - 3x - 1}{x^2} = \lim_{x \to 0} \frac{4e^{2x} - e^x - 3}{2x} = \frac{1}{2}\lim_{x \to 0} \frac{8e^{2x} - e^x}{1} = \frac{7}{2}.
 $$
 </Solution>
 </Example>
@@ -480,7 +477,7 @@ $$
 <Knowledge title="定理 4.6 (∞/∞ 型不定式)">
 设 $f, g$ 在 $(x_0, x_0 + \delta)$ 内满足定理 4.5 中的条件(2)与(3)，条件(1)改为
 $$
-\lim_{x \to x_0^+} f(x) = \lim_{x \to x_0^+} g(x) = \infty,
+\lim_{x \to x_0} f(x) = \lim_{x \to x_0} g(x) = \infty,
 $$
 则有同样的结论成立（证明从略）。
 
@@ -498,8 +495,8 @@ $$
 $$
 \begin{aligned}
 \lim_{x \to +\infty} \frac{x^\alpha}{a^{\beta x}} &= \lim_{x \to +\infty} \frac{\alpha x^{\alpha - 1}}{\beta a^{\beta x} \ln a} = \lim_{x \to +\infty} \frac{\alpha(\alpha - 1)x^{\alpha - 2}}{\beta^2 a^{\beta x}(\ln a)^2} \\
-&= \dots = \lim_{x \to +\infty} \frac{\alpha(\alpha - 1)\cdots(\alpha - n + 1)x^{\alpha - n}}{\beta^n a^{\beta x}(\ln a)^n} \\
-&= \lim_{x \to +\infty} \frac{\alpha(\alpha - 1)\cdots(\alpha - n)}{\beta^{n+1} a^{\beta x}(\ln a)^{n+1} x^{n + 1 - \alpha}} = 0,
+&= \cdots = \lim_{x \to +\infty} \frac{\alpha(\alpha - 1)\cdots(\alpha - n + 1)x^{\alpha - n}}{\beta^n a^{\beta x}(\ln a)^n} \\
+&= \lim_{x \to +\infty} \frac{\alpha(\alpha - 1)\cdots(\alpha - n)}{\beta^{n+1} a^{\beta x}(\ln a)^{n+1} x^{n+1-\alpha}} = 0,
 \end{aligned}
 $$
 其中 $n = [\alpha]$。
@@ -508,14 +505,14 @@ $$
 
 由例 4.8 易见，虽然当 $x \to +\infty$ 时，$\log_a x, x^\alpha, a^{\beta x}$ 都是无穷大量，但是，$x^\alpha$ 是 $\log_a x$ 的高阶无穷大，$a^{\beta x}$ 又是 $x^\alpha$ 的高阶无穷大。这反映了当 $x \to +\infty$ 时，它们是数量级不同的无穷大：指数函数 $a^{\beta x}$ 的数量级最高，幂函数 $x^\alpha$ 次之，对数函数 $\log_a x$ 的数量级最低。为便于今后的应用，希望读者能记住这个事实。
 
-除了 $\frac{0}{0}$ 与 $\frac{\infty}{\infty}$ 型之外，还有 $0 \cdot \infty, \infty - \infty, 1^\infty, 0^0, \infty^0$ 等类型的不定式，它们的极限都能化为 $\frac{0}{0}$ 或 $\frac{\infty}{\infty}$ 型不定式来计算。例如，$0^0$ 表示当 $x \to x_0$（或 $x \to \infty$）时，函数 $f(x)^{g(x)}$ 中的 $f(x) \to 0^+, g(x) \to 0$。由等式 $f(x)^{g(x)} = \mathrm{e}^{g(x)\ln f(x)}$ 易见，求该不定式的极限就转化为求 $0 \cdot \infty$ 不定式的极限 $\lim_{x \to x_0} g(x)\ln f(x)$。下面举例说明。
+除了 $\frac{0}{0}$ 与 $\frac{\infty}{\infty}$ 型之外，还有 $0 \cdot \infty, \infty - \infty, 1^\infty, 0^0, \infty^0$ 等类型的不定式，它们的极限都能化为 $\frac{0}{0}$ 或 $\frac{\infty}{\infty}$ 型不定式来计算。例如，$0^0$ 表示当 $x \to x_0$（或 $x \to \infty$）时，函数 $f(x)^{g(x)}$ 中的 $f(x) \to 0^+, g(x) \to 0$。由等式 $f(x)^{g(x)} = e^{g(x)\ln f(x)}$ 易见，求该不定式的极限就转化为求 $0 \cdot \infty$ 不定式的极限 $\lim_{x \to x_0} g(x)\ln f(x)$。下面举例说明。
 
 <Example title="例 4.9">
 求下列极限：
 
 (1) $\lim_{x \to \frac{\pi}{2}} (\sec x - \tan x)$；
 
-(2) $\lim_{x \to +\infty} \left(\frac{\pi}{2} - \arctan x\right)^{\frac{1}{\ln x}}$。
+(2) $\lim_{x \to +\infty} \left( \frac{\pi}{2} - \arctan x \right)^{\frac{1}{\ln x}}$。
 
 <Solution title="解">
 (1) 此极限属于 $\infty - \infty$ 型不定式。由于
@@ -524,23 +521,23 @@ $$
 $$
 当 $x \to \frac{\pi}{2}$ 时，它就转化成 $\frac{0}{0}$ 型不定式。应用 L'Hospital 法则，
 $$
-\text{原式} = \lim_{x \to \frac{\pi}{2}} \frac{1 - \sin x}{\cos x} = \lim_{x \to \frac{\pi}{2}} \frac{-\cos x}{-\sin x} = 0.
+\text{原式} = \lim_{x \to \frac{\pi}{2}} \frac{1 - \sin x}{\cos x} = \lim_{x \to \frac{\pi}{2}} \left( \frac{-\cos x}{-\sin x} \right) = 0.
 $$
 
 (2) 此极限属于 $0^0$ 型不定式。由于
 $$
-\left(\frac{\pi}{2} - \arctan x\right)^{\frac{1}{\ln x}} = \mathrm{e}^{\frac{1}{\ln x} \cdot \ln\left(\frac{\pi}{2} - \arctan x\right)},
+\left( \frac{\pi}{2} - \arctan x \right)^{\frac{1}{\ln x}} = e^{\frac{1}{\ln x} \cdot \ln\left( \frac{\pi}{2} - \arctan x \right)},
 $$
-当 $x \to +\infty$ 时，$\frac{\ln\left(\frac{\pi}{2} - \arctan x\right)}{\ln x}$ 属于 $\frac{\infty}{\infty}$ 型不定式。应用 L'Hospital 法则，
+当 $x \to +\infty$ 时，$\frac{\ln\left( \frac{\pi}{2} - \arctan x \right)}{\ln x}$ 属于 $\frac{\infty}{\infty}$ 型不定式。应用 L'Hospital 法则，
 $$
 \begin{aligned}
-\lim_{x \to +\infty} \frac{\ln\left(\frac{\pi}{2} - \arctan x\right)}{\ln x} &= \lim_{x \to +\infty} \frac{-\frac{1}{1 + x^2} \cdot \frac{1}{\frac{\pi}{2} - \arctan x}}{\frac{1}{x}} = \lim_{x \to +\infty} \frac{-\frac{x}{1 + x^2}}{\frac{\pi}{2} - \arctan x} \\
-&= -\lim_{x \to +\infty} \frac{\frac{1 - x^2}{(1 + x^2)^2}}{-\frac{1}{1 + x^2}} = -1.
+\lim_{x \to +\infty} \frac{\ln\left( \frac{\pi}{2} - \arctan x \right)}{\ln x} &= \lim_{x \to +\infty} \frac{-\frac{x}{1 + x^2}}{\frac{\pi}{2} - \arctan x} \\
+&= -\lim_{x \to +\infty} \left[ \frac{1 - x^2}{(1 + x^2)^2} \Big/ \left( -\frac{1}{1 + x^2} \right) \right] = -1.
 \end{aligned}
 $$
 所以
 $$
-\lim_{x \to +\infty} \left(\frac{\pi}{2} - \arctan x\right)^{\frac{1}{\ln x}} = \frac{1}{\mathrm{e}}.
+\lim_{x \to +\infty} \left( \frac{\pi}{2} - \arctan x \right)^{\frac{1}{\ln x}} = \frac{1}{e}.
 $$
 </Solution>
 </Example>
@@ -548,59 +545,59 @@ $$
 <QRCodeVideo id="2.4.4" title="使用 L'Hospital 法则应注意的问题" url="http://2d.hep.cn/1254051/27" />
 
 <Example title="例 4.10">
-求一个 $n$ 次多项式 $P_n(x) = a_0 + a_1 x + a_2 x^2 + \dots + a_n x^n$，使
+求一个 $n$ 次多项式 $P_n(x) = a_0 + a_1 x + a_2 x^2 + \cdots + a_n x^n$，使
 $$
-\mathrm{e}^x = P_n(x) + o(x^n).
+e^x = P_n(x) + o(x^n).
 $$
 
 <Solution title="解">
-要使 $\mathrm{e}^x = P_n(x) + o(x^n)$，只要使
+要使 $e^x = P_n(x) + o(x^n)$，只要使
 $$
-\mathrm{e}^x - P_n(x) = o(x^n),
+e^x - P_n(x) = o(x^n),
 $$
 也就是使
 $$
-\lim_{x \to 0} \frac{\mathrm{e}^x - P_n(x)}{x^k} = 0 \quad (k = 0, 1, 2, \dots, n).
+\lim_{x \to 0} \frac{e^x - P_n(x)}{x^k} = 0 \quad (k = 0, 1, 2, \cdots, n).
 $$
 
-取 $k = 0$，由 $\lim_{x \to 0} [\mathrm{e}^x - P_n(x)] = 0$，得知 $a_0 = \mathrm{e}^0 = 1$。
+取 $k = 0$，由 $\lim_{x \to 0}[e^x - P_n(x)] = 0$，得知 $a_0 = e^0 = 1$。
 
-取 $k = 1$，由 $\lim_{x \to 0} \frac{\mathrm{e}^x - P_n(x)}{x} = 0$，应用 L'Hospital 法则得
+取 $k = 1$，由 $\lim_{x \to 0} \frac{e^x - P_n(x)}{x} = 0$，应用 L'Hospital 法则得
 $$
 \begin{aligned}
-\lim_{x \to 0} \frac{\mathrm{e}^x - P_n(x)}{x} &= \lim_{x \to 0} [(\mathrm{e}^x)' - P'_n(x)] \\
-&= \lim_{x \to 0} [(\mathrm{e}^x)' - (a_1 + 2a_2 x + \dots + na_n x^{n-1})] \\
-&= \lim_{x \to 0} [(\mathrm{e}^x)' - a_1] = 0,
+\lim_{x \to 0} \frac{e^x - P_n(x)}{x} &= \lim_{x \to 0}[(e^x)' - P'_n(x)] \\
+&= \lim_{x \to 0}[(e^x)' - (a_1 + 2a_2 x + \cdots + na_n x^{n-1})] \\
+&= \lim_{x \to 0}[(e^x)' - a_1] = 0,
 \end{aligned}
 $$
-从而得 $a_1 = (\mathrm{e}^x)'\big|_{x = 0} = 1$。
+从而得 $a_1 = (e^x)'|_{x = 0} = 1$。
 
-取 $k = 2$，由 $\lim_{x \to 0} \frac{\mathrm{e}^x - P_n(x)}{x^2} = 0$，连续 2 次应用 L'Hospital 法则得
+取 $k = 2$，由 $\lim_{x \to 0} \frac{e^x - P_n(x)}{x^2} = 0$，连续 2 次应用 L'Hospital 法则得
 $$
 \begin{aligned}
-\lim_{x \to 0} \frac{\mathrm{e}^x - P_n(x)}{x^2} &= \lim_{x \to 0} \frac{(\mathrm{e}^x)' - P'_n(x)}{2x} = \frac{1}{2!} \lim_{x \to 0} [(\mathrm{e}^x)'' - P''_n(x)] \\
-&= \frac{1}{2!} \lim_{x \to 0} \{(\mathrm{e}^x)'' - [2!a_2 + \dots + n(n - 1)x^{n-2}]\} \\
-&= \frac{1}{2!} \lim_{x \to 0} [(\mathrm{e}^x)'' - 2!a_2] = 0,
+\lim_{x \to 0} \frac{e^x - P_n(x)}{x^2} &= \lim_{x \to 0} \frac{(e^x)' - P'_n(x)}{2x} = \frac{1}{2!} \lim_{x \to 0}[(e^x)'' - P''_n(x)] \\
+&= \frac{1}{2!} \lim_{x \to 0} \{(e^x)'' - [2! a_2 + \cdots + n(n - 1)x^{n-2}]\} \\
+&= \frac{1}{2!} \lim_{x \to 0}[(e^x)'' - 2! a_2] = 0,
 \end{aligned}
 $$
-从而得 $a_2 = \frac{1}{2!} (\mathrm{e}^x)''\Big|_{x = 0} = \frac{1}{2!}$。
+从而得 $a_2 = \frac{1}{2!} (e^x)''|_{x = 0} = \frac{1}{2!}$。
 
-类似可得，$a_k = \frac{1}{k!} (\mathrm{e}^x)^{(k)}\Big|_{x = 0} = \frac{1}{k!} \quad (k = 3, 4, \dots, n)$。
+类似可得，$a_k = \frac{1}{k!} (e^x)^{(k)}|_{x = 0} = \frac{1}{k!} \quad (k = 3, 4, \cdots, n)$。
 
 因此，我们有
 $$
-P_n(x) = 1 + x + \frac{1}{2!} x^2 + \dots + \frac{1}{n!} x^n,
+P_n(x) = 1 + x + \frac{1}{2!} x^2 + \cdots + \frac{1}{n!} x^n,
 $$
 $$
-\mathrm{e}^x = 1 + x + \frac{1}{2!} x^2 + \dots + \frac{1}{n!} x^n + o(x^n).
-$$
-
-若记 $f(x) = \mathrm{e}^x$，则系数 $a_k = \frac{1}{k!} = \frac{1}{k!} f^{(k)}(0)$。这时上式可写成如下形式：
-$$
-f(x) = f(0) + f'(0)x + \frac{f''(0)}{2!} x^2 + \dots + \frac{f^{(n)}(0)}{n!} x^n + o(x^n).\tag{4.6}
+e^x = 1 + x + \frac{1}{2!} x^2 + \cdots + \frac{1}{n!} x^n + o(x^n).
 $$
 
-下一节我们将看到，(4.6)式具有一般性。
+若记 $f(x) = e^x$，则系数 $a_k = \frac{1}{k!} = \frac{1}{k!} f^{(k)}(0)$。这时上式可写成如下形式：
+$$
+f(x) = f(0) + f'(0)x + \frac{f''(0)}{2!}x^2 + \cdots + \frac{f^{(n)}(0)}{n!}x^n + o(x^n). \tag{4.6}
+$$
+
+下一节我们将看到，(4.6) 式具有一般性。
 </Solution>
 </Example>
 

@@ -45,6 +45,7 @@
 | [模块查重与巡检工具.md](./模块查重与巡检工具.md) | **全书模块巡检与查重**：模块集中索引、同章查重与异常拆分定位。 | `src/utils/module-inspector/` |
 | [大邮数学集题库结构化与分章习题交接文档.md](./大邮数学集题库结构化与分章习题交接文档.md) | **真题题库抽取与分章习题**：173 套试卷结构化解析、LaTeX 公式平衡与分章自测页集成。 | `scripts/lib/math_archive/`<br>`src/data/exercises/` |
 | [Gemma4原书扫描全视觉推倒重建与全书构建流水线交接文档.md](./Gemma4原书扫描全视觉推倒重建与全书构建流水线交接文档.md) | **原书全视觉推倒重建流水线**：以原书 PDF 物理扫描页为 Ground Truth，采用 `gemma-4-26b-a4b-it` 进行流式端到端视觉重构与验证体系。 | `scripts/vision_reconstruct/`<br>`src/content/docs/collections/math/` |
+| [工科数学分析基础原书逐页精修改正与对齐交接文档.md](./工科数学分析基础原书逐页精修改正与对齐交接文档.md) | **《工科数学分析基础》原书逐页精修改正与对齐交接**：马知恩、王绵森经典教材全书逐页高保真重构规范。第一章（1.1~1.5）100% 验收战果、上册物理页码映射公式（$P_{\text{phys}} = P_{\text{book}} + 17$）、7 种常见 OCR 缺陷排坑宝典、后续章节任务矩阵与六步闭环 SOP。 | `src/content/docs/collections/math/engineering_analysis/`<br>`test/data/ch1_pages/` ~ `test/data/ch7_pages/` |
 | [线性代数与几何原书视觉数字化重构与导入交接文档.md](./线性代数与几何原书视觉数字化重构与导入交接文档.md) | **《线性代数与几何（第2版）》视觉重构与导入交接**：北京邮电大学精品教材全书 239 页物理映射、已完成章节（前言、第1章全章、第2章前2节、第3章全章、第4章全章）、未竟小节断点与出版级规范。 | `src/content/docs/collections/math/linear_algebra_geometry/`<br>`scripts/vision_reconstruct/` |
 | [线性代数与几何题库结构化与分章习题交接文档.md](./线性代数与几何题库结构化与分章习题交接文档.md) | **《线性代数与几何（第2版）》课后习题与参考答案题库交接**：全书 9 章 253 道课后习题与书末参考答案的物理页码映射矩阵、标准 JSON 题库 Schema 规范、全站题库注册与分步实施 SOP。 | `src/data/exercises/`<br>`src/config/exercise-banks.config.ts` |
 
