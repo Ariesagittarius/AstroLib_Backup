@@ -102,9 +102,6 @@ const bookConfigJson = JSON.stringify(currentBook);
   </section>
 </aside>
 
-<!-- 全局侧载抽屉遮罩 (在 Tablet/Mobile 抽屉模式下激活) -->
-<div class="astrolib-sideload-scrim" id="astrolib-sideload-scrim" aria-hidden="true"></div>
-
 <!-- 移动端本地导航 VPLocalNav（VitePress 移植：顶部 sticky 条 + 大纲 popup 下拉面板） -->
 <div class="vp-local-nav" data-vp-local-nav>
   <div class="vp-local-nav-container">
@@ -189,8 +186,9 @@ const bookConfigJson = JSON.stringify(currentBook);
 
     // 绑定侧载抽屉遮罩点击关闭
     const scrim = document.getElementById('astrolib-sideload-scrim');
-    if (scrim) {
-      scrim.onclick = () => sideloadManager.switchToDefault();
+    if (scrim && !(scrim as any).__sideloadBound) {
+      (scrim as any).__sideloadBound = true;
+      scrim.addEventListener('click', () => sideloadManager.switchToDefault());
     }
   }
 

@@ -77,8 +77,37 @@ html[data-site-theme='material-you'] .vp-site-name {
    Header Right Control Group (Android Studio / Material You 34px Standard)
    -------------------------------------------------------------------------- */
 
+html[data-site-theme='material-you'] .vp-sidebar-toggle-btn,
+html[data-site-theme='material-you'] .vp-right-sidebar-toggle-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 2.25rem !important;
+  height: 2.25rem !important;
+  border-radius: var(--md-shape-corner-full, 9999px) !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--md-sys-color-on-surface-variant, var(--sl-color-gray-2)) !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
 html[data-site-theme='material-you'] .vp-sidebar-toggle-btn {
-  display: none !important;
+  margin-right: 0.35rem !important;
+}
+
+html[data-site-theme='material-you'] .vp-sidebar-toggle-btn:hover,
+html[data-site-theme='material-you'] .vp-right-sidebar-toggle-btn:hover {
+  background-color: var(--md-sys-color-surface-container-highest, rgba(125, 125, 125, 0.12)) !important;
+  color: var(--md-sys-color-on-surface, var(--sl-color-text-accent)) !important;
+}
+
+@media (max-width: 71.999rem) {
+  html[data-site-theme='material-you'] .vp-right-sidebar-toggle-btn {
+    display: none !important;
+  }
 }
 
 /* Flatten hierarchy: Ensure all 4 controls share the exact same flex row and equal gap */
@@ -253,24 +282,6 @@ html[data-site-theme='material-you'] .vp-theme-switch:not(.is-dark) .vp-sun {
   display: block !important;
 }
 
-@media (max-width: 49.999rem) {
-  html[data-site-theme='material-you'] .vp-sidebar-toggle-btn {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 2.5rem !important;
-    height: 2.5rem !important;
-    border-radius: var(--md-shape-corner-full) !important;
-    border: none !important;
-    background: transparent !important;
-    color: var(--md-sys-color-on-surface-variant) !important;
-    transition: background-color 0.15s ease, color 0.15s ease !important;
-  }
-  html[data-site-theme='material-you'] .vp-sidebar-toggle-btn:hover {
-    background-color: var(--md-sys-color-surface-container-highest) !important;
-    color: var(--md-sys-color-on-surface) !important;
-  }
-}
 
 html[data-site-theme='material-you'] .vp-header-link {
   border-radius: var(--md-shape-corner-extra-small) !important;
@@ -1435,6 +1446,13 @@ html[data-site-theme='material-you'] [data-action="reset-defaults"]:hover {
     max-width: var(--sl-sidebar-width, 16rem) !important;
     flex-shrink: 0 !important;
     box-sizing: border-box !important;
+    transition: width 0.22s cubic-bezier(0.2, 0, 0, 1), min-width 0.22s cubic-bezier(0.2, 0, 0, 1), max-width 0.22s cubic-bezier(0.2, 0, 0, 1) !important;
+  }
+
+  html[data-site-theme='material-you'][data-sidebar-left-collapsed='true'] .vp-brand-wrapper {
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
   }
 }
 
@@ -1695,8 +1713,35 @@ html[data-site-theme='material-you'][data-theme='dark'] nav.sidebar {
   background-color: #131314 !important;
 }
 
-html[data-site-theme='material-you'] .sidebar-content {
+html[data-site-theme='material-you'] .sidebar-pane {
   padding: 0.5rem 0.5rem 3rem !important;
+  transition: transform 0.22s cubic-bezier(0.2, 0, 0, 1), visibility 0.22s cubic-bezier(0.2, 0, 0, 1) !important;
+}
+
+@media (min-width: 50rem) {
+  html[data-site-theme='material-you'][data-sidebar-left-collapsed='true'] {
+    --sl-sidebar-width: 0rem !important;
+    --sl-content-inline-start: 0rem !important;
+  }
+
+  html[data-site-theme='material-you'][data-sidebar-left-collapsed='true'] .sidebar-pane {
+    transform: translateX(-100%) !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    border-inline-end: none !important;
+    pointer-events: none !important;
+  }
+
+  html[data-site-theme='material-you'] .main-frame {
+    transition: margin-left 0.22s cubic-bezier(0.2, 0, 0, 1), max-width 0.22s cubic-bezier(0.2, 0, 0, 1), padding-inline-start 0.22s cubic-bezier(0.2, 0, 0, 1) !important;
+  }
+
+  html[data-site-theme='material-you'][data-sidebar-left-collapsed='true'] .main-frame {
+    margin-left: 0 !important;
+    padding-inline-start: 0 !important;
+    max-width: 88rem !important;
+    width: 100% !important;
+  }
 }
 
 /* 4.0 侧栏滑动指示器：M3 优雅浮动风格，滚动槽始终保持稳定（scrollbar-gutter: stable），
@@ -2268,7 +2313,7 @@ html[data-site-theme='material-you'] .main-pane > main {
   margin: 0 auto !important;
   min-height: calc(100vh - var(--sl-nav-height) - 3rem) !important;
   box-sizing: border-box !important;
-  transition: background-color 0.2s ease, border-color 0.2s ease !important;
+  transition: max-width 0.22s cubic-bezier(0.2, 0, 0, 1), margin 0.22s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, border-color 0.2s ease !important;
 }
 
 html[data-site-theme='material-you'][data-theme='dark'] .main-pane > main {
@@ -2583,6 +2628,46 @@ html[data-site-theme='material-you'] .ex-info-svg {
     padding: 0 !important;
   }
 
+  html[data-site-theme='material-you'][data-sideload-active='none'] .right-sidebar-container,
+  html[data-site-theme='material-you'][data-sidebar-right-collapsed='true'] .right-sidebar-container {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    border-left: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+  }
+
+  html[data-site-theme='material-you'][data-sideload-active='none'] .main-frame,
+  html[data-site-theme='material-you'][data-sidebar-right-collapsed='true'] .main-frame {
+    max-width: 100% !important;
+    margin-right: 0 !important;
+  }
+
+  html[data-site-theme='material-you'][data-sideload-active='none'] .main-pane,
+  html[data-site-theme='material-you'][data-sidebar-right-collapsed='true'] .main-pane {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-right: 1.25rem !important;
+  }
+
+  html[data-site-theme='material-you'][data-sideload-active='none'] .main-pane > main,
+  html[data-site-theme='material-you'][data-sidebar-right-collapsed='true'] .main-pane > main {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  html[data-site-theme='material-you'][data-sideload-active='none'] .sl-container,
+  html[data-site-theme='material-you'][data-sidebar-right-collapsed='true'] .sl-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
   html[data-site-theme='material-you'] .right-sidebar {
     position: static !important;
     height: 100% !important;
@@ -2710,7 +2795,8 @@ body.ai-sidebar-active .sideload-panel-view[data-panel-id='ai'] {
 
   html[data-sideload-active]:not([data-sideload-active='toc']):not([data-sideload-active='none']) .right-sidebar-container,
   body.exercise-sidebar-active .right-sidebar-container {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     position: fixed !important;
     top: var(--sl-nav-height) !important;
     right: 0 !important;
@@ -2718,10 +2804,13 @@ body.ai-sidebar-active .sideload-panel-view[data-panel-id='ai'] {
     width: min(25rem, 85vw) !important;
     min-width: 0 !important;
     max-width: 85vw !important;
+    height: calc(100vh - var(--sl-nav-height)) !important;
+    max-height: calc(100vh - var(--sl-nav-height)) !important;
     background-color: var(--md-sys-color-surface, #ffffff) !important;
     box-shadow: var(--md-elevation-level-3, 0 8px 24px rgba(0, 0, 0, 0.2)) !important;
     z-index: var(--layer-drawer, 400) !important;
     border-left: 1px solid var(--sl-color-hairline) !important;
+    overflow: hidden !important;
     transform: translateX(0) !important;
   }
 
@@ -2730,17 +2819,26 @@ body.ai-sidebar-active .sideload-panel-view[data-panel-id='ai'] {
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
+    display: flex !important;
+    flex-direction: column !important;
     padding-top: 0 !important;
     border-inline-start: none !important;
+    overflow: hidden !important;
   }
 
   html[data-sideload-active]:not([data-sideload-active='toc']):not([data-sideload-active='none']) .custom-page-sidebar,
   body.exercise-sidebar-active .custom-page-sidebar {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
     padding: 0 !important;
+    overflow: hidden !important;
   }
 }
 
@@ -2755,7 +2853,8 @@ body.ai-sidebar-active .sideload-panel-view[data-panel-id='ai'] {
 
   html[data-sideload-active]:not([data-sideload-active='toc']):not([data-sideload-active='none']) .right-sidebar-container,
   body.exercise-sidebar-active .right-sidebar-container {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     position: fixed !important;
     left: 0 !important;
     right: 0 !important;
@@ -2764,6 +2863,8 @@ body.ai-sidebar-active .sideload-panel-view[data-panel-id='ai'] {
     width: 100vw !important;
     max-width: 100vw !important;
     min-width: 0 !important;
+    height: 85vh !important;
+    height: 85dvh !important;
     max-height: 85vh !important;
     max-height: 85dvh !important;
     border-radius: 16px 16px 0 0 !important;
@@ -2772,6 +2873,9 @@ body.ai-sidebar-active .sideload-panel-view[data-panel-id='ai'] {
     border-top: 1px solid var(--sl-color-hairline) !important;
     border-left: none !important;
     z-index: var(--layer-drawer, 400) !important;
+    overflow: hidden !important;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px)) !important;
+    box-sizing: border-box !important;
   }
 
   html[data-sideload-active]:not([data-sideload-active='toc']):not([data-sideload-active='none']) .right-sidebar,
@@ -2779,17 +2883,26 @@ body.ai-sidebar-active .sideload-panel-view[data-panel-id='ai'] {
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
+    display: flex !important;
+    flex-direction: column !important;
     padding-top: 0 !important;
     border-inline-start: none !important;
+    overflow: hidden !important;
   }
 
   html[data-sideload-active]:not([data-sideload-active='toc']):not([data-sideload-active='none']) .custom-page-sidebar,
   body.exercise-sidebar-active .custom-page-sidebar {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
     padding: 0 !important;
+    overflow: hidden !important;
   }
 }
 
@@ -2862,7 +2975,9 @@ body.ai-sidebar-active .sideload-panel-view[data-panel-id='ai'] {
 .ex-sidebar-content {
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  flex: 1 !important;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  overscroll-behavior: contain !important;
   padding: 0.25rem 0.15rem 0.75rem 0.15rem !important;
   scrollbar-width: thin !important;
   box-sizing: border-box !important;

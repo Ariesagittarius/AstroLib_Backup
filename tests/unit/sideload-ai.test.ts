@@ -231,4 +231,22 @@ describe('SideloadManager AI 面板与侧载状态流转', () => {
     const aiCss = fs.readFileSync(path.resolve('src/components/ai/ai-theme.css'), 'utf-8');
     expect(aiCss).not.toMatch(/\.sideload-panel-view\[data-panel-id=['"]ai['"]\]\.active[^{]*?ai-dock-enter/);
   });
+
+  it('移动端侧载底座与遮罩契约：遮罩层位于全局 OverlayRoot，侧栏具有确定的 Flex 约束与 Safe-Area', async () => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+
+    // 1. 遮罩层必须挂载在 PageFrameOverride 的 #astro-overlay-root 内
+    const pageFrameAstro = fs.readFileSync(path.resolve('src/components/PageFrameOverride.astro'), 'utf-8');
+    expect(pageFrameAstro).toContain('id="astro-overlay-root"');
+    expect(pageFrameAstro).toContain('id="astrolib-sideload-scrim"');
+
+    // 2. PageSidebarOverride 内部严禁包含遮罩层（杜绝在 .right-sidebar-container 内部形成反向 Stacking Context 囚禁）
+    const pageSidebarAstro = fs.readFileSync(path.resolve('src/components/PageSidebarOverride.astro'), 'utf-8');
+    expect(pageSidebarAstro).not.toMatch(/<div[^>]*class="[^"]*astrolib-sideload-scrim[^"]*"/);
+
+    // 3. theme.css 中移动端 .right-sidebar-container 必须具备 flex 列布局、定高与 safe-area
+    const themeCss = fs.readFileSync(path.resolve('src/themes/material-you/theme.css'), 'utf-8');
+    expect(themeCss).toMatch(/@media\s*\(max-width:\s*49\.999rem\)\s*\{[\s\S]*?\.right-sidebar-container\s*\{[\s\S]*?flex-direction:\s*column\s*!important;[\s\S]*?height:\s*85vh\s*!important;[\s\S]*?overflow:\s*hidden\s*!important;[\s\S]*?padding-bottom:\s*max\(/);
+  });
 });

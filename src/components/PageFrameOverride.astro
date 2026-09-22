@@ -17,7 +17,10 @@ import DefaultPageFrame from '@astrojs/starlight/components/PageFrame.astro';
 	<slot name="sidebar" slot="sidebar" />
 	<slot />
 </DefaultPageFrame>
-<div id="astro-overlay-root"></div>
+<div id="astro-overlay-root">
+  <!-- 全局侧载抽屉遮罩 (在 Tablet/Mobile 抽屉模式下激活，置于顶层 Overlay 根节点，避免被侧栏 Stacking Context 囚禁) -->
+  <div class="astrolib-sideload-scrim" id="astrolib-sideload-scrim" aria-hidden="true"></div>
+</div>
 
 <script is:inline>
   (function() {
@@ -33,6 +36,16 @@ import DefaultPageFrame from '@astrojs/starlight/components/PageFrame.astro';
         if (!isNaN(pxVal)) {
           document.documentElement.style.setProperty('--academic-font-size-body', (pxVal * 0.75) + 'pt');
         }
+      }
+      var isDesktop = window.innerWidth >= 800;
+      var isWide = window.innerWidth >= 1152;
+      if (isDesktop && localStorage.getItem('astrolib_sidebar_left_collapsed') === 'true') {
+        document.documentElement.dataset.sidebarLeftCollapsed = 'true';
+      }
+      if (isWide && localStorage.getItem('astrolib_sidebar_right_collapsed') === 'true') {
+        document.documentElement.dataset.sidebarRightCollapsed = 'true';
+        document.documentElement.dataset.sideloadActive = 'none';
+        document.documentElement.style.setProperty('--sl-sideload-width', '0rem');
       }
     } catch (e) {}
   })();

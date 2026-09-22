@@ -2261,6 +2261,8 @@ body.ai-sidebar-active ai-ask .ask-panel {
   border-radius: 0 !important;
   box-shadow: none !important;
   display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
   z-index: auto !important;
   flex: 1 1 auto !important;
 }

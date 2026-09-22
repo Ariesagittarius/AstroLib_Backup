@@ -38,6 +38,8 @@ const WIDTH_MAP: Record<SideloadWidthTier, string> = {
   none: '0rem',
 };
 
+export const SIDEBAR_RIGHT_STORAGE_KEY = 'astrolib_sidebar_right_collapsed';
+
 class SideloadManager {
   private activePanelId = 'toc';
   private previousPanelId: string | null = null;
@@ -74,6 +76,15 @@ class SideloadManager {
     if (this.isInitialized || typeof window === 'undefined') return;
     this.isInitialized = true;
 
+    // 0. 读取右侧栏折叠持久化偏好（桌面端 >= 72rem 生效）
+    try {
+      const stored = localStorage.getItem(SIDEBAR_RIGHT_STORAGE_KEY);
+      const isDesktop = window.matchMedia('(min-width: 72rem)').matches;
+      if (stored === 'true' && isDesktop) {
+        this.activePanelId = 'none';
+      }
+    } catch {}
+
     // 绑定全局 Esc 键退出非大纲面板
     window.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
@@ -84,12 +95,37 @@ class SideloadManager {
       }
     });
 
+    // 绑定全局 Alt+T / Alt+O 快捷键收放右侧栏（避开文本输入控件）
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.tagName === 'MD-OUTLINED-TEXT-FIELD' ||
+        target.isContentEditable
+      )) {
+        return;
+      }
+
+      if (e.altKey && (e.key.toLowerCase() === 't' || e.key.toLowerCase() === 'o') && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        this.toggleRightSidebar();
+      }
+    });
+
     // 监听全站低性能模式切换：激活时自动退回本节大纲
     window.addEventListener('astrolib:lite-mode-change', (e: any) => {
       if (e?.detail?.enabled) {
         this.switchToDefault();
       }
     });
+
+    // 绑定侧载抽屉遮罩点击关闭 (作为单例状态机统一防线)
+    const scrim = document.getElementById('astrolib-sideload-scrim');
+    if (scrim && !(scrim as any).__sideloadBound) {
+      (scrim as any).__sideloadBound = true;
+      scrim.addEventListener('click', () => this.switchToDefault());
+    }
 
     // 同步初态至 DOM
     this.syncDom();
@@ -114,6 +150,14 @@ class SideloadManager {
     // 低性能模式守卫：严禁打开重型非大纲视图（如习题面板），确保纯净正文阅读
     if (typeof localStorage !== 'undefined' && localStorage.getItem('astrolib_lite_mode') === 'true' && panelId !== 'toc') {
       return;
+    }
+
+    if (panelId !== 'none') {
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(SIDEBAR_RIGHT_STORAGE_KEY, 'false');
+        }
+      } catch {}
     }
 
     if (this.activePanelId === panelId) return;
@@ -142,11 +186,64 @@ class SideloadManager {
   }
 
   /**
+   * 判断右侧栏当前是否处于完全收起折叠状态
+   */
+  public isCollapsed(): boolean {
+    return this.activePanelId === 'none';
+  }
+
+  /**
+   * 获取上一个激活的面板 ID
+   */
+  public getPreviousPanelId(): string | null {
+    return this.previousPanelId;
+  }
+
+  /**
+   * 恢复右侧栏（若处于收起态，则恢复前次面板或默认大纲）
+   */
+  public restore(): void {
+    if (this.isCollapsed()) {
+      const target = (this.previousPanelId && this.previousPanelId !== 'none') ? this.previousPanelId : 'toc';
+      this.open(target);
+    }
+  }
+
+  /**
+   * 切换右侧栏收纳/展开：
+   * - 若在移动端/平板端 (< 72rem)，触发移动端大纲面板切换
+   * - 若在桌面端已收起，则恢复前一个面板或默认大纲
+   * - 若在桌面端已展开，则收起右侧栏
+   */
+  public toggleRightSidebar(): void {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 71.999rem)').matches) {
+      const localNavBtn = document.querySelector('.vp-local-nav-btn') as HTMLButtonElement | null;
+      if (localNavBtn) {
+        localNavBtn.click();
+        return;
+      }
+    }
+
+    if (this.isCollapsed()) {
+      this.restore();
+    } else {
+      this.collapse();
+    }
+  }
+
+  /**
    * 完全收起右侧栏（如进入全屏沉浸阅读模式）
    */
   public collapse(): void {
-    this.previousPanelId = this.activePanelId;
+    if (this.activePanelId !== 'none') {
+      this.previousPanelId = this.activePanelId;
+    }
     this.activePanelId = 'none';
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(SIDEBAR_RIGHT_STORAGE_KEY, 'true');
+      }
+    } catch {}
     this.syncDom();
   }
 
@@ -191,6 +288,7 @@ class SideloadManager {
     // 1. 设置数据集属性
     root.dataset.sideloadActive = state.activePanelId;
     root.dataset.sideloadTier = state.widthTier;
+    root.dataset.sidebarRightCollapsed = state.activePanelId === 'none' ? 'true' : 'false';
 
     // 兼容历史样式类名（平滑过渡，避免既有样式瞬间失效）
     if (state.activePanelId === 'exercises') {

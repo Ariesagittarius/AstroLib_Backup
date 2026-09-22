@@ -433,7 +433,8 @@ html[data-sideload-active='ai'] .sideload-panel-view[data-panel-id='ai'],
 
   html[data-sideload-active]:not([data-sideload-active='toc']):not([data-sideload-active='none']) .right-sidebar-container,
   body.exercise-sidebar-active .right-sidebar-container {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     position: fixed !important;
     top: var(--sl-nav-height) !important;
     right: 0 !important;
@@ -441,10 +442,13 @@ html[data-sideload-active='ai'] .sideload-panel-view[data-panel-id='ai'],
     width: min(25rem, 85vw) !important;
     min-width: 0 !important;
     max-width: 85vw !important;
+    height: calc(100vh - var(--sl-nav-height)) !important;
+    max-height: calc(100vh - var(--sl-nav-height)) !important;
     background-color: var(--md-sys-color-surface, #ffffff) !important;
     box-shadow: var(--md-elevation-level-3, 0 8px 24px rgba(0, 0, 0, 0.2)) !important;
     z-index: var(--layer-drawer, 400) !important;
     border-left: 1px solid var(--sl-color-hairline) !important;
+    overflow: hidden !important;
     transform: translateX(0) !important;
     animation: m3-side-sheet-in 0.28s cubic-bezier(0.05, 0.7, 0.1, 1.0) !important;
   }
@@ -454,17 +458,26 @@ html[data-sideload-active='ai'] .sideload-panel-view[data-panel-id='ai'],
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
+    display: flex !important;
+    flex-direction: column !important;
     padding-top: 0 !important;
     border-inline-start: none !important;
+    overflow: hidden !important;
   }
 
   html[data-sideload-active]:not([data-sideload-active='toc']):not([data-sideload-active='none']) .custom-page-sidebar,
   body.exercise-sidebar-active .custom-page-sidebar {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
     padding: 0 !important;
+    overflow: hidden !important;
   }
 }
 
@@ -488,7 +501,8 @@ html[data-sideload-active='ai'] .sideload-panel-view[data-panel-id='ai'],
 
   html[data-sideload-active]:not([data-sideload-active='toc']):not([data-sideload-active='none']) .right-sidebar-container,
   body.exercise-sidebar-active .right-sidebar-container {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     position: fixed !important;
     left: 0 !important;
     right: 0 !important;
@@ -497,6 +511,8 @@ html[data-sideload-active='ai'] .sideload-panel-view[data-panel-id='ai'],
     width: 100vw !important;
     max-width: 100vw !important;
     min-width: 0 !important;
+    height: 85vh !important;
+    height: 85dvh !important;
     max-height: 85vh !important;
     max-height: 85dvh !important;
     border-radius: 16px 16px 0 0 !important;
@@ -505,6 +521,9 @@ html[data-sideload-active='ai'] .sideload-panel-view[data-panel-id='ai'],
     border-top: 1px solid var(--sl-color-hairline) !important;
     border-left: none !important;
     z-index: var(--layer-drawer, 400) !important;
+    overflow: hidden !important;
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px)) !important;
+    box-sizing: border-box !important;
     animation: m3-bottom-sheet-in 0.28s cubic-bezier(0.05, 0.7, 0.1, 1.0) !important;
   }
 
@@ -522,17 +541,26 @@ html[data-sideload-active='ai'] .sideload-panel-view[data-panel-id='ai'],
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
+    display: flex !important;
+    flex-direction: column !important;
     padding-top: 0 !important;
     border-inline-start: none !important;
+    overflow: hidden !important;
   }
 
   html[data-sideload-active]:not([data-sideload-active='toc']):not([data-sideload-active='none']) .custom-page-sidebar,
   body.exercise-sidebar-active .custom-page-sidebar {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     width: 100% !important;
     max-width: 100% !important;
     height: 100% !important;
+    min-height: 0 !important;
+    flex: 1 1 0% !important;
     padding: 0 !important;
+    overflow: hidden !important;
   }
 }
 
@@ -605,7 +633,9 @@ html[data-sideload-active='ai'] .sideload-panel-view[data-panel-id='ai'],
 .ex-sidebar-content {
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  flex: 1 !important;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  overscroll-behavior: contain !important;
   padding: 0.25rem 0.15rem 0.75rem 0.15rem !important;
   scrollbar-width: thin !important;
   box-sizing: border-box !important;
