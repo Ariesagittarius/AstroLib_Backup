@@ -17,21 +17,22 @@ const shouldRenderSearch =
 <div class="vp-header-inner">
 	<!-- Brand & Existing Logo Icon -->
 	<div class="vp-brand-wrapper">
-		<!-- 移动端原生侧滑栏切换按钮（集成在顶栏内部流中，彻底解决定位飘移与颜色不可见问题） -->
+		<!-- 左侧栏收放切换按钮 (全视口统一：桌面折叠/移动端抽屉) -->
 		<button
 			type="button"
 			class="vp-sidebar-toggle-btn"
 			id="vp-sidebar-toggle-btn"
-			aria-label="打开全书章节目录"
-			aria-expanded="false"
+			aria-label="收放全书章节目录"
+			title="收放全书章节目录 (Ctrl+B)"
+			data-tooltip="收起目录 (Ctrl+B)"
+			aria-expanded="true"
 			aria-controls="starlight__sidebar"
 		>
-			<svg class="vp-icon-bars" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-				<line x1="3" y1="6" x2="21" y2="6" />
-				<line x1="3" y1="12" x2="21" y2="12" />
-				<line x1="3" y1="18" x2="21" y2="18" />
+			<svg class="vp-icon-dock-left" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+				<line x1="9.5" y1="4.5" x2="9.5" y2="19.5" />
 			</svg>
-			<svg class="vp-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			<svg class="vp-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 				<line x1="18" y1="6" x2="6" y2="18" />
 				<line x1="6" y1="6" x2="18" y2="18" />
 			</svg>
@@ -52,6 +53,23 @@ const shouldRenderSearch =
 
 	<!-- Right Control Group (Google Drive 40px Circular Icon Group) -->
 	<div class="print:hidden vp-right-group right-group">
+		<!-- 0. 右侧栏 / 本章大纲收放按钮 (全视口统一：桌面折叠/移动端大纲) -->
+		<button
+			type="button"
+			class="vp-right-sidebar-toggle-btn"
+			id="vp-right-sidebar-toggle-btn"
+			aria-label="收放本节大纲与侧载栏"
+			title="收放本节大纲 (Alt+T)"
+			data-tooltip="收起大纲 (Alt+T)"
+			aria-expanded="true"
+			aria-controls="astrolib-sideload-dock"
+		>
+			<svg class="vp-icon-dock-right" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<rect x="3.5" y="4.5" width="17" height="15" rx="2.5" />
+				<line x1="14.5" y1="4.5" x2="14.5" y2="19.5" />
+			</svg>
+		</button>
+
 		<!-- 1. 书籍与学习工具聚合菜单 -->
 		<HeaderToolsMenu />
 
@@ -87,52 +105,169 @@ const shouldRenderSearch =
 		flex-shrink: 0;
 	}
 
+	.vp-sidebar-toggle-btn,
+	.vp-right-sidebar-toggle-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.125rem;
+		height: 2.125rem;
+		padding: 0;
+		border-radius: 50%;
+		border: none;
+		background: transparent;
+		color: var(--sl-color-gray-2);
+		cursor: pointer;
+		flex-shrink: 0;
+		transition: background-color 0.15s ease, color 0.15s ease;
+		position: relative;
+	}
+
 	.vp-sidebar-toggle-btn {
+		margin-right: 0.45rem;
+	}
+
+	:global([data-theme='dark']) .vp-sidebar-toggle-btn,
+	:global([data-theme='dark']) .vp-right-sidebar-toggle-btn {
+		color: var(--sl-color-gray-2, #e2e8f0);
+	}
+
+	.vp-sidebar-toggle-btn:hover,
+	.vp-right-sidebar-toggle-btn:hover {
+		background-color: var(--sl-color-gray-6, rgba(125, 125, 125, 0.1));
+		color: var(--sl-color-text-accent);
+	}
+
+	.vp-sidebar-toggle-btn svg,
+	.vp-right-sidebar-toggle-btn svg {
+		width: 1.25rem;
+		height: 1.25rem;
+	}
+
+	.vp-sidebar-toggle-btn .vp-icon-close {
 		display: none;
 	}
 
+	@media (max-width: 71.999rem) {
+		.vp-right-sidebar-toggle-btn {
+			display: none !important;
+		}
+	}
+
 	@media (max-width: 49.999rem) {
-		.vp-sidebar-toggle-btn {
-			display: inline-flex;
-			align-items: center;
-			justify-content: center;
-			width: 2.25rem;
-			height: 2.25rem;
-			padding: 0.35rem;
-			margin-right: 0.45rem;
-			border-radius: 4px;
-			border: none;
-			background: transparent;
-			color: var(--sl-color-gray-1, #2c3e50);
-			cursor: pointer;
-			flex-shrink: 0;
-			transition: background-color 0.15s ease, color 0.15s ease;
-		}
-
-		:global([data-theme='dark']) .vp-sidebar-toggle-btn {
-			color: var(--sl-color-gray-2, #e2e8f0);
-		}
-
-		.vp-sidebar-toggle-btn:hover {
-			background-color: var(--sl-color-gray-6, rgba(125, 125, 125, 0.1));
-			color: var(--sl-color-text-accent);
-		}
-
-		.vp-sidebar-toggle-btn svg {
-			width: 1.25rem;
-			height: 1.25rem;
-		}
-
-		.vp-sidebar-toggle-btn .vp-icon-close {
+		:global(body[data-mobile-menu-expanded]) .vp-sidebar-toggle-btn .vp-icon-dock-left {
 			display: none;
 		}
-
-		:global(body[data-mobile-menu-expanded]) .vp-sidebar-toggle-btn .vp-icon-bars {
-			display: none;
-		}
-
 		:global(body[data-mobile-menu-expanded]) .vp-sidebar-toggle-btn .vp-icon-close {
 			display: block;
+		}
+	}
+
+	/* ==========================================================================
+	   Google Material 3 Plain Tooltip System for Header Action Buttons
+	   ========================================================================== */
+	.vp-sidebar-toggle-btn[data-tooltip],
+	.vp-right-sidebar-toggle-btn[data-tooltip] {
+		position: relative;
+	}
+
+	.vp-sidebar-toggle-btn[data-tooltip]::before,
+	.vp-right-sidebar-toggle-btn[data-tooltip]::before {
+		content: attr(data-tooltip);
+		position: absolute;
+		top: calc(100% + 8px);
+		left: 50%;
+		transform: translateX(-50%) translateY(-3px);
+		padding: 0.25rem 0.5rem;
+		font-size: 0.6875rem;
+		font-weight: 500;
+		line-height: 1;
+		white-space: nowrap;
+		border-radius: var(--md-shape-corner-extra-small, 4px);
+		background-color: var(--md-sys-color-inverse-surface, #313033);
+		color: var(--md-sys-color-inverse-on-surface, #f4eff4);
+		box-shadow: var(--md-elevation-level-2, 0 2px 6px rgba(0, 0, 0, 0.25));
+		pointer-events: none;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.15s cubic-bezier(0.2, 0, 0, 1), transform 0.15s cubic-bezier(0.2, 0, 0, 1), visibility 0.15s;
+		z-index: var(--layer-popover, 300);
+	}
+
+	.vp-sidebar-toggle-btn[data-tooltip]::after,
+	.vp-right-sidebar-toggle-btn[data-tooltip]::after {
+		content: '';
+		position: absolute;
+		top: calc(100% + 3px);
+		left: 50%;
+		transform: translateX(-50%) translateY(-3px);
+		border-width: 0 4px 5px 4px;
+		border-style: solid;
+		border-color: transparent transparent var(--md-sys-color-inverse-surface, #313033) transparent;
+		pointer-events: none;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.15s cubic-bezier(0.2, 0, 0, 1), transform 0.15s cubic-bezier(0.2, 0, 0, 1), visibility 0.15s;
+		z-index: var(--layer-popover, 300);
+	}
+
+	.vp-sidebar-toggle-btn[data-tooltip]:hover::before,
+	.vp-sidebar-toggle-btn[data-tooltip]:hover::after,
+	.vp-sidebar-toggle-btn[data-tooltip]:focus-visible::before,
+	.vp-sidebar-toggle-btn[data-tooltip]:focus-visible::after,
+	.vp-right-sidebar-toggle-btn[data-tooltip]:hover::before,
+	.vp-right-sidebar-toggle-btn[data-tooltip]:hover::after,
+	.vp-right-sidebar-toggle-btn[data-tooltip]:focus-visible::before,
+	.vp-right-sidebar-toggle-btn[data-tooltip]:focus-visible::after {
+		opacity: 1;
+		visibility: visible;
+		transform: translateX(-50%) translateY(0);
+	}
+
+	/* Left tooltip margin alignment */
+	.vp-sidebar-toggle-btn[data-tooltip]::before {
+		left: 0;
+		transform: translateX(0) translateY(-3px);
+	}
+	.vp-sidebar-toggle-btn[data-tooltip]::after {
+		left: 1rem;
+		transform: translateX(-50%) translateY(-3px);
+	}
+	.vp-sidebar-toggle-btn[data-tooltip]:hover::before,
+	.vp-sidebar-toggle-btn[data-tooltip]:focus-visible::before {
+		transform: translateX(0) translateY(0);
+	}
+	.vp-sidebar-toggle-btn[data-tooltip]:hover::after,
+	.vp-sidebar-toggle-btn[data-tooltip]:focus-visible::after {
+		transform: translateX(-50%) translateY(0);
+	}
+
+	/* Right tooltip margin alignment */
+	.vp-right-sidebar-toggle-btn[data-tooltip]::before {
+		left: auto;
+		right: 0;
+		transform: translateX(0) translateY(-3px);
+	}
+	.vp-right-sidebar-toggle-btn[data-tooltip]::after {
+		left: auto;
+		right: 0.85rem;
+		transform: translateX(50%) translateY(-3px);
+	}
+	.vp-right-sidebar-toggle-btn[data-tooltip]:hover::before,
+	.vp-right-sidebar-toggle-btn[data-tooltip]:focus-visible::before {
+		transform: translateX(0) translateY(0);
+	}
+	.vp-right-sidebar-toggle-btn[data-tooltip]:hover::after,
+	.vp-right-sidebar-toggle-btn[data-tooltip]:focus-visible::after {
+		transform: translateX(50%) translateY(0);
+	}
+
+	@media (hover: none) {
+		.vp-sidebar-toggle-btn[data-tooltip]::before,
+		.vp-sidebar-toggle-btn[data-tooltip]::after,
+		.vp-right-sidebar-toggle-btn[data-tooltip]::before,
+		.vp-right-sidebar-toggle-btn[data-tooltip]::after {
+			display: none !important;
 		}
 	}
 
@@ -212,35 +347,76 @@ const shouldRenderSearch =
 </style>
 
 <script>
-	function setupMobileSidebarToggle() {
-		const btn = document.getElementById('vp-sidebar-toggle-btn');
-		if (!btn || btn.dataset.bound) return;
-		btn.dataset.bound = 'true';
+	import { sidebarLayoutController } from './sidebar/sidebar-layout-controller';
+	import { sideloadManager } from './sideload/sideload-manager';
 
-		btn.addEventListener('click', () => {
-			const starlightBtn = document.querySelector('starlight-menu-button button') as HTMLButtonElement | null;
-			if (starlightBtn) {
-				starlightBtn.click();
-			} else {
-				const isExpanded = document.body.hasAttribute('data-mobile-menu-expanded');
-				document.body.toggleAttribute('data-mobile-menu-expanded', !isExpanded);
+	function setupHeaderSidebars() {
+		sidebarLayoutController.init();
+		sideloadManager.init();
+
+		const leftBtn = document.getElementById('vp-sidebar-toggle-btn');
+		const rightBtn = document.getElementById('vp-right-sidebar-toggle-btn');
+
+		if (leftBtn && !leftBtn.dataset.bound) {
+			leftBtn.dataset.bound = 'true';
+			leftBtn.addEventListener('click', () => {
+				sidebarLayoutController.toggleLeftSidebar();
+			});
+		}
+
+		if (rightBtn && !rightBtn.dataset.bound) {
+			rightBtn.dataset.bound = 'true';
+			rightBtn.addEventListener('click', () => {
+				if (window.matchMedia('(max-width: 71.999rem)').matches) {
+					// 移动端/平板端：触发大纲 popup/抽屉
+					const localNavBtn = document.querySelector('.vp-local-nav-btn') as HTMLButtonElement | null;
+					if (localNavBtn) {
+						localNavBtn.click();
+					} else {
+						sideloadManager.toggleRightSidebar();
+					}
+				} else {
+					// 桌面端：折叠或展开右侧分栏
+					sideloadManager.toggleRightSidebar();
+				}
+			});
+		}
+
+		function syncButtons() {
+			if (leftBtn) {
+				const state = sidebarLayoutController.getState();
+				const isCollapsed = state.isMobile ? !state.mobileExpanded : state.collapsed;
+				leftBtn.setAttribute('aria-expanded', String(!isCollapsed));
+				leftBtn.classList.toggle('is-collapsed', isCollapsed);
+				const leftTip = isCollapsed ? '展开目录 (Ctrl+B)' : '收起目录 (Ctrl+B)';
+				leftBtn.setAttribute('data-tooltip', leftTip);
+				leftBtn.setAttribute('title', leftTip);
 			}
-			const expanded = document.body.hasAttribute('data-mobile-menu-expanded');
-			btn.setAttribute('aria-expanded', String(expanded));
-		});
 
-		// 监听 body 的 data-mobile-menu-expanded 属性变化，实时同步按钮状态
-		const observer = new MutationObserver(() => {
-			const expanded = document.body.hasAttribute('data-mobile-menu-expanded');
-			btn.setAttribute('aria-expanded', String(expanded));
-		});
+			if (rightBtn) {
+				const isCollapsed = sideloadManager.isCollapsed();
+				rightBtn.setAttribute('aria-expanded', String(!isCollapsed));
+				rightBtn.classList.toggle('is-collapsed', isCollapsed);
+				const rightTip = isCollapsed ? '展开大纲 (Alt+T)' : '收起大纲 (Alt+T)';
+				rightBtn.setAttribute('data-tooltip', rightTip);
+				rightBtn.setAttribute('title', rightTip);
+			}
+		}
+
+		syncButtons();
+
+		sidebarLayoutController.subscribe(syncButtons);
+		sideloadManager.subscribe(syncButtons);
+
+		// 监听移动端菜单展开状态
+		const observer = new MutationObserver(syncButtons);
 		observer.observe(document.body, { attributes: true, attributeFilter: ['data-mobile-menu-expanded'] });
 	}
 
 	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', setupMobileSidebarToggle);
+		document.addEventListener('DOMContentLoaded', setupHeaderSidebars);
 	} else {
-		setupMobileSidebarToggle();
+		setupHeaderSidebars();
 	}
-	document.addEventListener('astro:page-load', setupMobileSidebarToggle);
+	document.addEventListener('astro:page-load', setupHeaderSidebars);
 </script>
