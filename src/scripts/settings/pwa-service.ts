@@ -108,7 +108,7 @@ export function syncAllPwaCard(): void {
           badge.classList.remove('is-loaded');
         }
         if (desc) {
-          desc.textContent = '从 GitHub 一次性下载全站离线包，断网秒开，不消耗主站流量';
+          desc.textContent = '一键下载全站离线数据包，全量章节断网秒开，零网络依赖';
         }
         if (downloadBtnText) {
           downloadBtnText.textContent = '下载离线包';

@@ -35,6 +35,8 @@ import { exerciseDevServerPlugin } from './src/server/plugins/exercise-editor/de
 import { geminiProxyDevServerPlugin } from './src/server/plugins/gemini-proxy/dev-server-plugin.mjs';
 // BUPT AI 中继模块：/api/proxy/bupt/* 本地 Node.js 进程全双工反代端点（Vite dev server 插件，仅 dev 启用）
 import { buptProxyDevServerPlugin } from './src/server/plugins/bupt-proxy/dev-server-plugin.mjs';
+// 离线数据包本地服务端点：/offline-packs/* 透明分发端点（Vite dev server 插件，仅 dev 启用）
+import { offlinePackDevServerPlugin } from './src/server/plugins/offline-pack/dev-server-plugin.mjs';
 // Mermaid 图表拦截插件：将 ```mermaid 代码块转化为 .mermaid-container DOM
 import rehypeMermaid from './src/plugins/rehype/rehype-mermaid.mjs';
 // 图像高斯模糊占位插件：为正文图片在构建期生成微型 LQIP Base64 占位并平滑渐显
@@ -247,6 +249,8 @@ export default defineConfig({
       geminiProxyDevServerPlugin(),
       // BUPT AI 本地 Node.js 进程全双工中继反代端点（仅 dev 启用）
       buptProxyDevServerPlugin(),
+      // 离线数据包本地开发分发端点（仅 dev 启用）
+      offlinePackDevServerPlugin(),
     ],
     resolve: {
       alias: {

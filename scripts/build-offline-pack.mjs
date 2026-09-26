@@ -1,5 +1,6 @@
-﻿import fs from 'node:fs';
+import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { collections } from '../src/config/collections.config.mjs';
 
@@ -34,7 +35,7 @@ function findHtmlFiles(dir, baseDir, map = {}) {
 
 async function main() {
   console.log('\n===================================================================');
-  console.log('  📦 AstroLib 离线数据包打包器 (Per-Book & Global Packs)');
+  console.log('  📦 AstroLib 离线数据包打包器 (Gzip Compressed & Per-Book Packs)');
   console.log('===================================================================\n');
 
   if (!fs.existsSync(DIST_COLLECTIONS)) {
@@ -46,10 +47,20 @@ async function main() {
     fs.mkdirSync(OUT_DIR_DIST, { recursive: true });
   }
 
+  // 清理可能遗留的超过 100MB 的旧版未压缩全站大文件（防止 Vercel 静态部署超限失败）
+  const legacyAllJson = path.join(OUT_DIR_DIST, 'astrolib-all.json');
+  if (fs.existsSync(legacyAllJson)) {
+    try {
+      fs.unlinkSync(legacyAllJson);
+      console.log('  🧹 已清理历史遗留的超大未压缩包 astrolib-all.json (>100MB)');
+    } catch {}
+  }
+
   const manifest = {
-    version: '1.0.0',
+    version: '1.1.0',
     generatedAt: new Date().toISOString(),
-    books: []
+    books: [],
+    allRoutes: []
   };
 
   const allArticles = {};
@@ -65,8 +76,8 @@ async function main() {
       totalArticles += count;
 
       Object.assign(allArticles, bookArticles);
+      manifest.allRoutes.push(...Object.keys(bookArticles));
 
-      const bookPackFileName = `${col.slug}-${book.slug}.json`;
       const bookPackData = {
         bookId: book.id,
         title: book.title,
@@ -77,8 +88,25 @@ async function main() {
       };
 
       const bookJson = JSON.stringify(bookPackData);
-      const bookSizeMb = (Buffer.byteLength(bookJson, 'utf8') / (1024 * 1024)).toFixed(2);
-      fs.writeFileSync(path.join(OUT_DIR_DIST, bookPackFileName), bookJson, 'utf8');
+      const bookRawBytes = Buffer.byteLength(bookJson, 'utf8');
+      const bookRawMb = (bookRawBytes / (1024 * 1024)).toFixed(2);
+
+      // Gzip 高强度压缩 (level 9)
+      const bookGzBuffer = zlib.gzipSync(Buffer.from(bookJson, 'utf8'), { level: 9 });
+      const bookGzMb = (bookGzBuffer.length / (1024 * 1024)).toFixed(2);
+      const bookGzFileName = `${col.slug}-${book.slug}.json.gz`;
+      fs.writeFileSync(path.join(OUT_DIR_DIST, bookGzFileName), bookGzBuffer);
+
+      // 若未压缩体积低于 85MB，同时生成一份未压缩 json 供兼容性使用；超出则仅保留 .gz
+      const bookRawFileName = `${col.slug}-${book.slug}.json`;
+      if (Number(bookRawMb) < 85) {
+        fs.writeFileSync(path.join(OUT_DIR_DIST, bookRawFileName), bookJson, 'utf8');
+      } else {
+        const staleRaw = path.join(OUT_DIR_DIST, bookRawFileName);
+        if (fs.existsSync(staleRaw)) {
+          try { fs.unlinkSync(staleRaw); } catch {}
+        }
+      }
 
       manifest.books.push({
         id: book.id,
@@ -86,35 +114,42 @@ async function main() {
         colSlug: col.slug,
         bookSlug: book.slug,
         count,
-        packFileName: bookPackFileName,
-        sizeMb: bookSizeMb
+        packFileName: bookGzFileName,
+        rawPackFileName: Number(bookRawMb) < 85 ? bookRawFileName : undefined,
+        sizeMb: bookGzMb,
+        rawSizeMb: bookRawMb
       });
 
-      console.log(`  ✔ 《${book.title}》 (${col.slug}/${book.slug}) → ${bookPackFileName} (${count} 篇, ${bookSizeMb} MB)`);
+      console.log(`  ✔ 《${book.title}》 (${col.slug}/${book.slug}) → ${bookGzFileName} (${count} 篇, Gzip: ${bookGzMb} MB / 原始: ${bookRawMb} MB)`);
     }
   }
 
-  // 写入全站总包
-  console.log(`\n📦 正在合成全站汇总离线包 (astrolib-all.json)...`);
+  // 合成全站 Gzip 汇总包 (压缩后 ~45MB，安全满足 Vercel 100MB 限制)
+  console.log(`\n📦 正在合成全站 Gzip 压缩汇总包 (astrolib-all.json.gz)...`);
   const allPackData = {
-    version: '1.0.0',
+    version: '1.1.0',
     generatedAt: new Date().toISOString(),
     total: totalArticles,
     articles: allArticles
   };
   const allJson = JSON.stringify(allPackData);
-  const allSizeMb = (Buffer.byteLength(allJson, 'utf8') / (1024 * 1024)).toFixed(2);
-  fs.writeFileSync(path.join(OUT_DIR_DIST, 'astrolib-all.json'), allJson, 'utf8');
-  console.log(`  ✔ 全站总包已生成: astrolib-all.json (共 ${totalArticles} 篇, ${allSizeMb} MB)`);
+  const allRawMb = (Buffer.byteLength(allJson, 'utf8') / (1024 * 1024)).toFixed(2);
+
+  const allGzBuffer = zlib.gzipSync(Buffer.from(allJson, 'utf8'), { level: 9 });
+  const allGzMb = (allGzBuffer.length / (1024 * 1024)).toFixed(2);
+  const allGzFileName = 'astrolib-all.json.gz';
+  fs.writeFileSync(path.join(OUT_DIR_DIST, allGzFileName), allGzBuffer);
+  console.log(`  ✔ 全站总包已生成: ${allGzFileName} (共 ${totalArticles} 篇, Gzip: ${allGzMb} MB / 原始: ${allRawMb} MB)`);
 
   // 写入清单文件
   manifest.totalArticles = totalArticles;
-  manifest.allPackFileName = 'astrolib-all.json';
-  manifest.allSizeMb = allSizeMb;
+  manifest.allPackFileName = allGzFileName;
+  manifest.allSizeMb = allGzMb;
+  manifest.allRawSizeMb = allRawMb;
   fs.writeFileSync(path.join(OUT_DIR_DIST, 'manifest.json'), JSON.stringify(manifest, null, 2), 'utf8');
   console.log(`  ✔ 离线数据清单已写入: dist/offline-packs/manifest.json`);
 
-  console.log('\n🎉 所有离线包构建完成！可作为 Release 附件直接发布至 GitHub Releases。');
+  console.log('\n🎉 所有离线包构建与 Gzip 优化完成！同源直接分发，无 CORS 限制，合规 Vercel 静态部署。');
 }
 
 main().catch(console.error);
