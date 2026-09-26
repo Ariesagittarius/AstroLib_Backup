@@ -23,6 +23,7 @@ const SRC_TEXTBOOK_DATA = path.join(ROOT, 'src', 'data', 'exercises', 'engineeri
 const OUT_DIR = path.join(ROOT, 'public', 'data', 'exercises', 'engineering_analysis');
 const PAPERS_OUT_DIR = path.join(OUT_DIR, 'papers');
 
+const SRC_LAG_EXAM_DATA = path.join(ROOT, 'src', 'data', 'exercises', 'linear_algebra_geometry_exercises.json');
 const SRC_LAG_TEXTBOOK_DATA = path.join(ROOT, 'src', 'data', 'exercises', 'linear_algebra_geometry_textbook_exercises.json');
 const OUT_LAG_DIR = path.join(ROOT, 'public', 'data', 'exercises', 'linear_algebra_geometry');
 const PAPERS_LAG_OUT_DIR = path.join(OUT_LAG_DIR, 'papers');
@@ -499,18 +500,27 @@ function buildLinearAlgebraGeometryExercises() {
     return;
   }
 
-  if (!fs.existsSync(SRC_LAG_TEXTBOOK_DATA)) {
+  if (!fs.existsSync(SRC_LAG_TEXTBOOK_DATA) && !fs.existsSync(SRC_LAG_EXAM_DATA)) {
     console.log('[exercise-data] 提示：《线性代数与几何》习题库源文件暂未生成，跳过编译。');
     return;
   }
 
   const startTime = Date.now();
-  console.log('\n[exercise-data] 开始编译《线性代数与几何》题库（教材课后习题）...');
+  console.log('\n[exercise-data] 开始统一编译《线性代数与几何》题库（大邮真题 + 教材课后习题）...');
   fs.mkdirSync(OUT_LAG_DIR, { recursive: true });
   fs.mkdirSync(PAPERS_LAG_OUT_DIR, { recursive: true });
 
-  const rawData = JSON.parse(fs.readFileSync(SRC_LAG_TEXTBOOK_DATA, 'utf-8'));
-  const chapters = rawData.chapters || {};
+  let rawExamData = { chapters: {} };
+  if (fs.existsSync(SRC_LAG_EXAM_DATA)) {
+    rawExamData = JSON.parse(fs.readFileSync(SRC_LAG_EXAM_DATA, 'utf-8'));
+  }
+  const examChapters = rawExamData.chapters || {};
+
+  let rawTbData = { chapters: {} };
+  if (fs.existsSync(SRC_LAG_TEXTBOOK_DATA)) {
+    rawTbData = JSON.parse(fs.readFileSync(SRC_LAG_TEXTBOOK_DATA, 'utf-8'));
+  }
+  const tbChapters = rawTbData.chapters || {};
 
   const metaData = {
     book: 'linear_algebra_geometry',
@@ -524,25 +534,40 @@ function buildLinearAlgebraGeometryExercises() {
   };
 
   let totalQuestionsCount = 0;
+  let examQuestionsCount = 0;
+  let tbQuestionsCount = 0;
   const papersMap = new Map();
 
   for (let chId = 1; chId <= 9; chId++) {
     const chKey = String(chId);
-    const qList = chapters[chKey] || [];
+    const tbList = tbChapters[chKey] || [];
+    const examList = examChapters[chKey] || [];
+    // 教材习题优先排在前面，便于学生按节针对性复习教材
+    const qList = [...tbList, ...examList];
+
     const slimQuestions = [];
     const sectionCounts = {};
     const sectionSlugs = {};
     const sectionTitles = {};
     const typeCounts = { choice: 0, blank: 0, calc: 0, proof: 0 };
-    const sourceCounts = { '教材课后习题': qList.length };
+    const sourceCounts = {};
     let chapterTitle = `第${chId}章`;
 
     for (const q of qList) {
       totalQuestionsCount++;
+      const isTb = q.source_type === 'textbook' || (!q.source_type && !String(q.id || '').startsWith('BUPT-MATH'));
+      if (isTb) {
+        tbQuestionsCount++;
+      } else {
+        examQuestionsCount++;
+      }
+
       const qType = q.meta?.type || 'calc';
       typeCounts[qType] = (typeCounts[qType] || 0) + 1;
 
-      const category = q.source?.category || '教材课后习题';
+      const category = q.source?.category || (isTb ? '教材课后习题' : '线代期末');
+      sourceCounts[category] = (sourceCounts[category] || 0) + 1;
+
       const mapping = q.mapping?.linear_algebra_geometry || {};
       if (mapping.chapter_title) {
         chapterTitle = mapping.chapter_title;
@@ -556,14 +581,14 @@ function buildLinearAlgebraGeometryExercises() {
       sectionSlugs[sec] = secSlug;
       if (secTitle) sectionTitles[sec] = secTitle;
 
-      const paperId = q.source?.paper_id ?? (2000 + chId);
-      const rawTitle = q.source?.raw_title || `《线性代数与几何》第${chId}章 课后习题`;
-      const cleanTitle = cleanPaperTitle(rawTitle) || rawTitle;
+      const paperId = q.source?.paper_id ?? (isTb ? 2000 + chId : 42);
+      const rawTitle = q.source?.raw_title || (isTb ? `《线性代数与几何》第${chId}章 课后习题` : '线性代数期末考试试题');
+      const cleanTitle = cleanPaperTitle(rawTitle) || (isTb ? rawTitle : `${q.source?.academic_year || ''} ${category}`);
       const orderInPaper = q.meta?.order_in_paper || 1;
       const paperQNum = q.meta?.paper_q_num || extractPaperQuestionNum(q.id, orderInPaper);
-      const sectionType = q.meta?.section_type || '课后习题';
+      const sectionType = q.meta?.section_type || (isTb ? '课后习题' : '');
       const score = q.meta?.score ?? 5;
-      const group = q.meta?.group || '';
+      const group = q.meta?.group || (isTb ? 'A' : '');
 
       const stemRawClean = sanitizeMathLatex(q.content?.stem || '');
       const stemHtml = renderMathText(stemRawClean);
@@ -579,11 +604,14 @@ function buildLinearAlgebraGeometryExercises() {
       const hintsHtml = hintsRaw ? renderMathText(hintsRaw) : '';
       const stepsHtml = stepsRaw ? renderMathText(stepsRaw) : '';
 
-      const sourceStr = q.source?.source_desc || `${cleanTitle} · 第 ${paperQNum} 题`;
+      const sourceStr = isTb
+        ? (q.source?.source_desc || `${cleanTitle} · ${sectionType ? sectionType + ' ' : ''}第 ${paperQNum} 题`)
+        : `${cleanTitle} · 原卷第 ${paperQNum} 题`.trim();
 
       const searchRaw = [
         q.id,
-        'textbook',
+        isTb ? 'textbook' : 'exam',
+        group ? `${group}组` : '',
         stemRawClean,
         ...((q.content?.options || []).map(o => `${o.key} ${o.text}`)),
         answerRaw,
@@ -599,7 +627,7 @@ function buildLinearAlgebraGeometryExercises() {
 
       const slimItem = {
         id: q.id,
-        source_type: 'textbook',
+        source_type: isTb ? 'textbook' : 'exam',
         group,
         type: qType,
         score,
@@ -614,9 +642,9 @@ function buildLinearAlgebraGeometryExercises() {
         paper_q_num: paperQNum,
         order_in_paper: orderInPaper,
         section_type: sectionType,
-        academic_year: q.source?.academic_year || '教材配套',
+        academic_year: q.source?.academic_year || (isTb ? '教材配套' : ''),
         paper_category: category,
-        paper_type: q.source?.paper_type || '教材原题',
+        paper_type: q.source?.paper_type || (isTb ? '教材原题' : '综合'),
         source: sourceStr,
         kps,
         stem_html: stemHtml,
@@ -641,10 +669,10 @@ function buildLinearAlgebraGeometryExercises() {
           clean_title: cleanTitle,
           category: category,
           course_name: q.source?.course_name || '线性代数与几何',
-          academic_year: q.source?.academic_year || '教材配套',
+          academic_year: q.source?.academic_year || (isTb ? '教材配套' : ''),
           term: q.source?.term || 1,
-          exam_type: 'textbook',
-          paper_type: '教材原题',
+          exam_type: isTb ? 'textbook' : (q.source?.exam_type || 'final'),
+          paper_type: q.source?.paper_type || (isTb ? '教材原题' : '综合'),
           page_start: q.source?.page_start,
           page_end: q.source?.page_end,
           total_questions: 0,
@@ -762,22 +790,44 @@ function buildLinearAlgebraGeometryExercises() {
     papers: papersSummaryList
   }, null, 2), 'utf-8');
 
+  let examPapersCount = 0;
+  let tbPapersCount = 0;
+  for (const p of papersSummaryList) {
+    if (p.exam_type === 'textbook') {
+      tbPapersCount++;
+    } else {
+      examPapersCount++;
+    }
+  }
+
   metaData.total_questions = totalQuestionsCount;
   metaData.total_papers = papersSummaryList.length;
-  metaData.total_exam_questions = 0;
-  metaData.total_textbook_questions = totalQuestionsCount;
-  metaData.total_exam_papers = 0;
-  metaData.total_textbook_papers = papersSummaryList.length;
+  metaData.total_exam_questions = examQuestionsCount;
+  metaData.total_textbook_questions = tbQuestionsCount;
+  metaData.total_exam_papers = examPapersCount;
+  metaData.total_textbook_papers = tbPapersCount;
   const metaFile = path.join(OUT_LAG_DIR, 'meta.json');
   fs.writeFileSync(metaFile, JSON.stringify(metaData, null, 2), 'utf-8');
 
   const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
-  console.log(`\n[exercise-data] 《线性代数与几何》题库构建完成：9 个章节、${papersSummaryList.length} 套习题卷、共 ${totalQuestionsCount} 道题目已编译静态 HTML -> ${path.relative(ROOT, OUT_LAG_DIR)}/ (耗时: ${elapsed}s)`);
+  console.log(`\n[exercise-data] 《线性代数与几何》题库构建完成：9 个章节、${papersSummaryList.length} 套习题卷（教材卷: ${tbPapersCount}, 真题卷: ${examPapersCount}）、共 ${totalQuestionsCount} 道题目（教材: ${tbQuestionsCount}, 真题: ${examQuestionsCount}）已编译静态 HTML -> ${path.relative(ROOT, OUT_LAG_DIR)}/ (耗时: ${elapsed}s)`);
+}
+
+function copyCommunitySolutions() {
+  const src = path.join(ROOT, 'src', 'data', 'exercises', 'community_ai_solutions.json');
+  const destDir = path.join(ROOT, 'public', 'data', 'exercises');
+  fs.mkdirSync(destDir, { recursive: true });
+  const dest = path.join(destDir, 'community_ai_solutions.json');
+  if (fs.existsSync(src)) {
+    fs.copyFileSync(src, dest);
+    console.log(`[exercise-data] 社区 AI 题解已同步至静态发布目录 -> ${path.relative(ROOT, dest)}`);
+  }
 }
 
 function main() {
   buildEngineeringAnalysisExercises();
   buildLinearAlgebraGeometryExercises();
+  copyCommunitySolutions();
 }
 
 main();

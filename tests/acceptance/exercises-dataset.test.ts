@@ -62,4 +62,31 @@ describe('Exercises Dataset Acceptance Suite', () => {
     expect(Array.isArray(list)).toBe(true);
     expect(list.length).toBeGreaterThan(50);
   });
+
+  it('线性代数与几何真题精选库 linear_algebra_geometry_exercises 具备规范的数据结构与有效题量', () => {
+    const file = path.join(exDir, 'linear_algebra_geometry_exercises.json');
+    expect(fs.existsSync(file)).toBe(true);
+    const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+
+    expect(data.course).toBe('linear_algebra_geometry');
+    expect(data.chapters).toBeDefined();
+    const chapterKeys = Object.keys(data.chapters);
+    expect(chapterKeys.length).toBe(9);
+
+    let totalQ = 0;
+    for (const [ch, qList] of Object.entries<any[]>(data.chapters)) {
+      expect(Array.isArray(qList)).toBe(true);
+      expect(qList.length).toBeGreaterThan(0);
+      totalQ += qList.length;
+
+      for (const q of qList.slice(0, 5)) {
+        expect(q.id).toBeDefined();
+        expect(typeof q.id).toBe('string');
+        expect(q.content?.stem).toBeDefined();
+        expect(q.mapping?.linear_algebra_geometry).toBeDefined();
+        expect(q.mapping.linear_algebra_geometry.chapter).toBe(parseInt(ch, 10));
+      }
+    }
+    expect(totalQ).toBeGreaterThan(300);
+  });
 });

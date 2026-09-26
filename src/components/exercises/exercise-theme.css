@@ -986,6 +986,128 @@ md-dialog.ex-modal-m3-dialog.is-fullscreen {
   color: var(--ex-text-2);
 }
 
+/* 思路与考点独立提示面板 */
+.ex-hints-box {
+  margin-top: 0.4rem;
+  padding: 0.85rem 1.15rem;
+  background: var(--ex-bg-mute);
+  border-left: 2.5px solid #d97706;
+  border-radius: 0 2px 2px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  font-size: 0.86rem;
+}
+
+.ex-hints-box.hidden {
+  display: none !important;
+}
+
+.ex-hints-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--ex-text-1);
+}
+
+.ex-hints-icon {
+  font-size: 1.1rem;
+  color: #d97706;
+}
+
+.ex-hints-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--ex-text-3);
+}
+
+.ex-hints-sec-info {
+  font-size: 0.75rem;
+  color: var(--ex-text-3);
+}
+
+.ex-hints-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  line-height: 1.7;
+  color: var(--ex-text-1);
+  word-break: break-word;
+}
+
+.ex-hints-text {
+  font-size: 0.84rem;
+  color: var(--ex-text-1);
+}
+
+.ex-heuristic-guidance {
+  padding: 0.45rem 0.65rem;
+  background: rgba(217, 119, 6, 0.06);
+  border-radius: 2px;
+  border-left: 2px solid rgba(217, 119, 6, 0.4);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+.ex-hints-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px dashed var(--ex-border-subtle);
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  color: var(--ex-text-3);
+}
+
+.ex-toggle-hints-btn.active {
+  color: #d97706 !important;
+  border-color: rgba(217, 119, 6, 0.5) !important;
+  background: rgba(217, 119, 6, 0.06) !important;
+}
+
+/* 官方未提供解析时的友好引导提示 */
+.ex-solution-empty-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.6rem 0.8rem;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px dashed var(--ex-border-subtle);
+  border-radius: 2px;
+  font-size: 0.82rem;
+  color: var(--ex-text-2);
+}
+
+.ex-solution-empty-prompt p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.ex-solution-empty-title {
+  color: var(--ex-text-2);
+  font-weight: 500;
+}
+
+.ex-no-ans-tip {
+  font-weight: normal;
+  font-size: 0.82rem;
+  color: var(--ex-text-3);
+}
+
+.ex-btn-inline-ai {
+  align-self: flex-start;
+  margin-top: 0.2rem;
+  color: var(--ex-text-1) !important;
+  border-color: var(--ex-text-2) !important;
+}
+
 /* --------------------------------------------------------------------------
    6. In-Place AI Solution Panel (原位 AI 题解推导面板 · 学术体例)
    -------------------------------------------------------------------------- */
@@ -1215,6 +1337,218 @@ md-dialog.ex-modal-m3-dialog.is-fullscreen {
   color: var(--ex-text-3);
   font-size: 0.82rem;
   padding: 0.35rem 0;
+}
+
+/* AI 凭据配置引导卡片与提供商切换 */
+.ex-ai-key-config {
+  margin-top: 0.4rem;
+}
+
+.ex-ai-key-config.hidden {
+  display: none !important;
+}
+
+.ex-ai-key-prompt-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid var(--ex-border-subtle);
+  border-radius: 2px;
+  font-size: 0.82rem;
+}
+
+.ex-ai-key-prompt-header {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px dashed var(--ex-border-subtle);
+}
+
+.ex-ai-key-prompt-title {
+  font-weight: 600;
+  color: var(--ex-text-1);
+}
+
+.ex-ai-current-provider-tag {
+  font-size: 0.74rem;
+  color: var(--ex-text-2);
+  margin-left: auto;
+}
+
+.ex-ai-key-tip {
+  font-size: 0.8rem;
+  color: var(--ex-text-2);
+  line-height: 1.5;
+}
+
+.ex-ai-provider-quick-select {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin: 0.15rem 0;
+}
+
+.ex-ai-pqs-label {
+  font-size: 0.75rem;
+  color: var(--ex-text-3);
+}
+
+.ex-provider-chip {
+  padding: 0.15rem 0.55rem;
+  font-size: 0.74rem;
+  border-radius: 999px;
+  border: 1px solid var(--ex-border);
+  background: transparent;
+  color: var(--ex-text-2);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.ex-provider-chip:hover {
+  border-color: var(--ex-text-1);
+  color: var(--ex-text-1);
+}
+
+.ex-provider-chip.active {
+  background: var(--ex-text-1);
+  color: var(--ex-bg-canvas, #ffffff);
+  border-color: var(--ex-text-1);
+  font-weight: 600;
+}
+
+.ex-ai-key-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+
+.ex-ai-key-input {
+  flex: 1;
+  min-width: 220px;
+  height: 32px;
+  padding: 0 0.6rem;
+  font-size: 0.82rem;
+  border: 1px solid var(--ex-border);
+  border-radius: 2px;
+  background: var(--ex-bg-canvas);
+  color: var(--ex-text-1);
+  outline: none;
+  font-family: var(--sl-font-mono, monospace);
+  transition: border-color 0.15s ease;
+}
+
+.ex-ai-key-input:focus {
+  border-color: var(--ex-text-1);
+}
+
+.ex-ai-key-save-btn {
+  height: 32px;
+  padding: 0 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid var(--ex-text-1);
+  background: var(--ex-text-1);
+  color: var(--ex-bg-canvas, #ffffff);
+  border-radius: 2px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.ex-ai-key-save-btn:hover {
+  opacity: 0.88;
+}
+
+.ex-ai-key-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.2rem;
+  flex-wrap: wrap;
+}
+
+.ex-ai-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: transparent;
+  border: none;
+  font-size: 0.75rem;
+  color: var(--ex-text-2);
+  cursor: pointer;
+  padding: 0.15rem 0.25rem;
+  transition: color 0.12s ease;
+}
+
+.ex-ai-link-btn:hover {
+  color: var(--ex-text-1);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ex-ai-network-notice {
+  font-size: 0.74rem;
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px dashed rgba(245, 158, 11, 0.4);
+  padding: 0.4rem 0.65rem;
+  border-radius: 2px;
+  margin-top: 0.25rem;
+  line-height: 1.5;
+}
+
+/* AI 推导报错与诊断卡片 */
+.ex-ai-error-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+  border-radius: 2px;
+  background: rgba(220, 38, 38, 0.04);
+}
+
+.ex-ai-error-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #dc2626;
+  font-size: 0.85rem;
+}
+
+.ex-ai-error-icon {
+  font-size: 1.1rem;
+  color: #dc2626;
+}
+
+.ex-ai-error-msg {
+  font-size: 0.8rem;
+  color: var(--ex-text-1);
+  line-height: 1.55;
+}
+
+.ex-ai-error-advice {
+  font-size: 0.76rem;
+  color: var(--ex-text-2);
+  line-height: 1.5;
+  background: rgba(0, 0, 0, 0.03);
+  padding: 0.35rem 0.5rem;
+  border-radius: 2px;
+}
+
+.ex-ai-error-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  flex-wrap: wrap;
 }
 
 .ex-load-more-wrap {

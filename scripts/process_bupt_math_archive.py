@@ -138,11 +138,13 @@ def main():
     all_papers_dict = []
     all_questions: List[QuestionItem] = []
     ea_questions_by_chapter: Dict[int, List[QuestionItem]] = {i: [] for i in range(1, 8)}
+    lag_questions_by_chapter: Dict[int, List[QuestionItem]] = {i: [] for i in range(1, 10)}
     la_questions: List[QuestionItem] = []
     ps_questions: List[QuestionItem] = []
 
     inverted_index: Dict[str, Dict[str, List[str]]] = {
         "engineering_analysis": {},
+        "linear_algebra_geometry": {},
         "linear_algebra": {},
         "probability_statistics": {}
     }
@@ -186,6 +188,16 @@ def main():
                     inverted_index["engineering_analysis"].setdefault(sec_key, []).append(q.id)
 
                 # 线性代数映射
+                lag_map = q.mapping.get("linear_algebra_geometry")
+                if not lag_map and any(x in meta["category"] for x in ["线代"]):
+                    lag_map = extractor.classifier._classify_linear_algebra_geometry(q)
+                    q.mapping["linear_algebra_geometry"] = lag_map
+
+                if lag_map and any(x in meta["category"] for x in ["线代"]):
+                    lag_questions_by_chapter[lag_map.chapter].append(q)
+                    sec_key = lag_map.section_slug
+                    inverted_index["linear_algebra_geometry"].setdefault(sec_key, []).append(q.id)
+
                 la_map = q.mapping.get("linear_algebra")
                 if la_map or any(x in meta["category"] for x in ["线代", "高代", "矩阵论"]):
                     la_questions.append(q)
@@ -207,7 +219,9 @@ def main():
     print(f"  • 《工科数学分析》题量: {sum(len(v) for v in ea_questions_by_chapter.values())} 道")
     for ch_id, q_list in ea_questions_by_chapter.items():
         print(f"     - 第 {ch_id} 章: {len(q_list)} 道")
-    print(f"  • 《线性代数》题量: {len(la_questions)} 道")
+    print(f"  • 《线性代数与几何》题量: {sum(len(v) for v in lag_questions_by_chapter.values())} 道")
+    for ch_id, q_list in lag_questions_by_chapter.items():
+        print(f"     - 第 {ch_id} 章: {len(q_list)} 道")
     print(f"  • 《概率论与数理统计》题量: {len(ps_questions)} 道")
     print("----------------------------------------------------------------")
 
@@ -241,7 +255,23 @@ def main():
         json.dump(ea_payload, f, ensure_ascii=False, indent=2)
     print(f"💾 已导出《工科数学分析》专项题库: {ea_db_path}")
 
-    # 3. 导出倒排索引
+    # 3. 导出线性代数与几何专项题库
+    lag_db_path = os.path.join(args.data_dir, "linear_algebra_geometry_exercises.json")
+    lag_flat_questions = [q.to_dict() for q_list in lag_questions_by_chapter.values() for q in q_list]
+    lag_payload = {
+        "course": "linear_algebra_geometry",
+        "title": "线性代数与几何真题题库",
+        "total_questions": len(lag_flat_questions),
+        "chapters": {
+            ch_id: [q.to_dict() for q in q_list]
+            for ch_id, q_list in lag_questions_by_chapter.items()
+        }
+    }
+    with open(lag_db_path, "w", encoding="utf-8") as f:
+        json.dump(lag_payload, f, ensure_ascii=False, indent=2)
+    print(f"💾 已导出《线性代数与几何》专项题库: {lag_db_path}")
+
+    # 4. 导出倒排索引
     index_path = os.path.join(args.data_dir, "chapter_index.json")
     with open(index_path, "w", encoding="utf-8") as f:
         json.dump(inverted_index, f, ensure_ascii=False, indent=2)

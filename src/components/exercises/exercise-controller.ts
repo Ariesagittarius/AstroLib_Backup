@@ -18,6 +18,10 @@ import {
   saveAiApiKey,
   getActiveAiModel,
   onAiConfigChange,
+  getAiProvider,
+  saveAiActiveProvider,
+  saveProviderApiKey,
+  type AiProviderId,
 } from '../../ai/ai-config';
 import { parseAiError } from '../../ai/error-handler';
 import { createM3LoadingHtml } from '../common/m3-loading-helper';
@@ -1219,7 +1223,7 @@ class ExerciseCenterController {
           <div class="ex-left-actions">
             ${
               qType !== 'choice' && qType !== 'blank'
-                ? `<button type="button" class="ex-action-btn ex-toggle-steps-btn" data-action="toggle-steps" data-qid="${qid}">
+                ? `<button type="button" class="ex-action-btn ex-toggle-steps-btn ${record.revealedSolution ? 'active' : ''}" data-action="toggle-steps" data-qid="${qid}">
                     <md-icon class="ex-btn-mdicon">${record.revealedSolution ? 'visibility_off' : 'visibility'}</md-icon>
                     <span>${record.revealedSolution ? '收起解析' : '查看解析'}</span>
                   </button>`
@@ -1238,6 +1242,8 @@ class ExerciseCenterController {
           </div>
         </div>
 
+        <div class="ex-hints-box hidden" id="hints-${qid}"></div>
+
         <div class="ex-solution-box ${record.answered || record.revealedSolution ? '' : 'hidden'}" id="sol-${qid}">
           ${(record.answered || record.revealedSolution) ? this.renderSolutionBoxContent(q) : ''}
         </div>
@@ -1250,6 +1256,14 @@ class ExerciseCenterController {
               <span class="ex-ai-status" id="ai-status-${qid}">${hasAnySolution ? '推导就绪' : ''}</span>
             </div>
             <div class="ex-ai-tools">
+              <button type="button" class="ex-ai-tool-btn ex-ai-chat-btn" data-action="bridge-ai-chat" data-qid="${qid}" title="携带本题完整题干转入全局 AI 学术助手进行连续深度问答">
+                <md-icon class="ex-ai-tool-icon">forum</md-icon>
+                <span>转入对话</span>
+              </button>
+              <button type="button" class="ex-ai-tool-btn ex-ai-settings-btn" data-action="open-ai-settings" data-qid="${qid}" title="打开全局 AI 模型与网络设置面板">
+                <md-icon class="ex-ai-tool-icon">settings</md-icon>
+                <span>设置</span>
+              </button>
               <button type="button" class="ex-ai-tool-btn ex-ai-copy-btn ${hasAnySolution ? '' : 'hidden'}" data-action="copy-ai" data-qid="${qid}" title="复制 LaTeX / Markdown 题解">
                 <span>复制</span>
               </button>
@@ -1276,16 +1290,7 @@ class ExerciseCenterController {
             ${aiSolutionHtml}
           </div>
 
-          <div class="ex-ai-key-config hidden" id="ai-key-config-${qid}">
-            <div class="ex-ai-key-tip">未检测到 API Key，请输入您的 API Key（当前推导模型：<strong>${this.getAiModelLabel(qid, activeVer)}</strong>）：</div>
-            <div class="ex-ai-key-row">
-              <input type="password" class="ex-ai-key-input" placeholder="输入 API Key (sk-...)" autocomplete="off" />
-              <button type="button" class="ex-ai-key-save-btn" data-action="save-ai-key" data-qid="${qid}">保存并开始推导</button>
-            </div>
-            <div class="ex-ai-key-subtip" style="font-size: 0.72rem; color: var(--ex-text-3); margin-top: 4px;">
-              密钥仅保存在本机浏览器 localStorage。
-            </div>
-          </div>
+          ${this.renderAiKeyConfigCardHtml(qid)}
         </div>
       </div>
     `;
@@ -1325,6 +1330,77 @@ class ExerciseCenterController {
       if (match) return match.model_name;
     }
     return getActiveAiModel().label;
+  }
+
+  private renderAiKeyConfigCardHtml(qid: string): string {
+    const activeProvider = getAiProvider();
+    const providers: { id: AiProviderId; label: string }[] = [
+      { id: 'deepseek', label: 'DeepSeek (推荐·免翻)' },
+      { id: 'gemini', label: 'Google Gemini' },
+      { id: 'bupt', label: '北邮校内算力' },
+      { id: 'custom', label: '自定义/反代' },
+    ];
+
+    let placeholder = '输入 API Key (sk-...)';
+    if (activeProvider.id === 'gemini') {
+      placeholder = '输入 Gemini API Key (AIzaSy...)';
+    } else if (activeProvider.id === 'bupt') {
+      placeholder = '输入北邮校内 API Key (sk-...)';
+    }
+
+    const showGeminiNotice = activeProvider.id === 'gemini';
+
+    return `
+      <div class="ex-ai-key-config hidden" id="ai-key-config-${qid}">
+        <div class="ex-ai-key-prompt-card">
+          <div class="ex-ai-key-header">
+            <div class="ex-ai-key-title">
+              <md-icon class="ex-key-mdicon">vpn_key</md-icon>
+              <span>未配置 API Key · 请选择服务商并填写密钥</span>
+            </div>
+            <button type="button" class="ex-ai-key-settings-shortcut" data-action="open-ai-settings" title="打开全局高级模型与代理设置">
+              <md-icon class="ex-shortcut-mdicon">settings</md-icon>
+              <span>高级设置</span>
+            </button>
+          </div>
+
+          <div class="ex-provider-chips-row">
+            <span class="ex-provider-label">服务商：</span>
+            <div class="ex-provider-chips">
+              ${providers
+                .map(
+                  (p) => `
+                <button type="button" class="ex-provider-chip ${activeProvider.id === p.id ? 'active' : ''}" data-action="switch-provider-quick" data-provider="${p.id}" data-qid="${qid}">
+                  <span>${p.label}</span>
+                </button>
+              `
+                )
+                .join('')}
+            </div>
+          </div>
+
+          <div class="ex-ai-key-input-row">
+            <input type="password" class="ex-ai-key-input" placeholder="${placeholder}" autocomplete="off" />
+            <button type="button" class="ex-ai-key-save-btn" data-action="save-ai-key" data-qid="${qid}">
+              <span>保存并开始推导</span>
+            </button>
+          </div>
+
+          ${
+            showGeminiNotice
+              ? `<div class="ex-ai-net-notice">
+                  <md-icon class="ex-notice-mdicon">info</md-icon>
+                  <span>Google Gemini 官方端点在大陆网络直连可能因防火墙拦截导致超时。若无可用网络代理，建议上方快速切换为 <strong>DeepSeek</strong> 或 <strong>北邮算力</strong>。</span>
+                </div>`
+              : ''
+          }
+
+          <div class="ex-ai-key-footnote">
+            <span>密钥仅保存在本机浏览器本地（localStorage），不会上传至任何第三方服务器。</span>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   private renderInteractiveArea(q: SlimQuestionItem, record: UserPracticeRecord): string {
@@ -1472,6 +1548,35 @@ class ExerciseCenterController {
           return;
         }
 
+        if (action === 'open-ai-settings') {
+          this.openAiSettings();
+          return;
+        }
+
+        if (action === 'bridge-ai-chat') {
+          this.bridgeToAiChat(qid);
+          return;
+        }
+
+        if (action === 'switch-provider-quick') {
+          const provider = btn.getAttribute('data-provider') as AiProviderId;
+          if (provider) {
+            saveAiActiveProvider(provider);
+            const card = this.bodyContainer?.querySelector(`#q-card-${qid}`);
+            const keyConfig = card?.querySelector(`#ai-key-config-${qid}`);
+            if (keyConfig) {
+              keyConfig.outerHTML = this.renderAiKeyConfigCardHtml(qid);
+              const newKeyConfig = card?.querySelector(`#ai-key-config-${qid}`);
+              newKeyConfig?.classList.remove('hidden');
+            }
+            const modelBadge = card?.querySelector(`#ai-model-${qid}`);
+            if (modelBadge) {
+              modelBadge.textContent = this.getAiModelLabel(qid, 'local');
+            }
+          }
+          return;
+        }
+
         if (action === 'save-ai-key') {
           this.saveAiKey(qid);
           return;
@@ -1508,16 +1613,43 @@ class ExerciseCenterController {
     const record = this.practiceRecords.get(qid) || { answered: false };
     const knowledgePoints = q.kps || [];
 
+    const hasSteps = Boolean(q.steps_html && q.steps_html.trim());
+    const rawAnswer = (q.answer || '').trim();
+    const hasMeaningfulAnswer = Boolean(
+      (q.answer_html && q.answer_html.trim() && !q.answer_html.includes('详见解析') && !q.answer_html.includes('略')) ||
+      (rawAnswer && rawAnswer !== '详见解析' && rawAnswer !== '略')
+    );
+
+    let bodyContent = '';
+    if (!hasSteps && !hasMeaningfulAnswer) {
+      bodyContent = `
+        <div class="ex-solution-empty-prompt">
+          <div class="ex-empty-prompt-text">
+            <md-icon class="ex-empty-icon">menu_book</md-icon>
+            <span>教材原书暂未收录官方纯文本逐行演算。您可直接点击下方「AI 规范推导」，由学术大模型提供完整分步推导！</span>
+          </div>
+          <button type="button" class="ex-action-btn ex-btn-inline-ai" data-action="ask-ai" data-qid="${qid}">
+            <md-icon class="ex-btn-mdicon">auto_awesome</md-icon>
+            <span>立即生成 AI 规范推导</span>
+          </button>
+        </div>
+      `;
+    } else {
+      bodyContent = `
+        ${hasSteps ? `<div class="ex-solution-steps">${q.steps_html}</div>` : ''}
+        ${q.hints_html ? `<div class="ex-solution-steps"><strong>【思路提示】</strong>${q.hints_html}</div>` : ''}
+      `;
+    }
+
     return `
       <div class="ex-solution-title">
-        <span>【参考答案】${q.answer_html || '详见解析'}</span>
+        <span>【参考答案】${q.answer_html || '详见下方步骤推导'}</span>
       </div>
-      ${q.steps_html ? `<div class="ex-solution-steps">${q.steps_html}</div>` : ''}
-      ${q.hints_html ? `<div class="ex-solution-steps"><strong>【思路提示】</strong>${q.hints_html}</div>` : ''}
+      ${bodyContent}
       <div class="ex-solution-footer">
         <div class="ex-knowledge-tags">
           <span class="ex-k-label">考察考点：</span>
-          ${knowledgePoints.map((kp) => `<span class="ex-k-tag">${kp}</span>`).join('')}
+          ${knowledgePoints.map((kp) => `<span class="ex-k-tag">${this.esc(kp)}</span>`).join('')}
         </div>
         ${
           qType !== 'choice' && qType !== 'blank'
@@ -1537,8 +1669,68 @@ class ExerciseCenterController {
       const q = this.currentFilteredQuestions.find((item) => item.id === qid);
       if (q) {
         solBox.innerHTML = this.renderSolutionBoxContent(q);
+        try {
+          renderMathInElement(solBox as HTMLElement, KATEX_OPTIONS);
+        } catch (e) {}
       }
     }
+  }
+
+  private renderHintsBoxContent(q: SlimQuestionItem): string {
+    const qid = q.id;
+    const knowledgePoints = q.kps || [];
+    const hasOfficialHint = Boolean(q.hints_html && q.hints_html.trim());
+
+    return `
+      <div class="ex-hints-header">
+        <div class="ex-hints-title">
+          <md-icon class="ex-hints-mdicon">lightbulb</md-icon>
+          <span>思路导引与考点剖析</span>
+        </div>
+        ${
+          knowledgePoints.length > 0
+            ? `<div class="ex-knowledge-tags">
+                <span class="ex-k-label">考察考点：</span>
+                ${knowledgePoints.map((kp) => `<span class="ex-k-tag">${this.esc(kp)}</span>`).join('')}
+              </div>`
+            : ''
+        }
+      </div>
+      <div class="ex-hints-body">
+        ${
+          hasOfficialHint
+            ? `<div class="ex-hints-text">${q.hints_html}</div>`
+            : `<div class="ex-hints-heuristic">${this.generateHeuristicHint(q)}</div>`
+        }
+      </div>
+      <div class="ex-hints-action-row">
+        <button type="button" class="ex-action-btn ex-btn-inline-ai" data-action="ask-ai" data-qid="${qid}">
+          <md-icon class="ex-btn-mdicon">auto_awesome</md-icon>
+          <span>需要更详尽演算？点击生成 AI 规范推导</span>
+        </button>
+      </div>
+    `;
+  }
+
+  private generateHeuristicHint(q: SlimQuestionItem): string {
+    const qType = q.type;
+    let strategy = '';
+    if (qType === 'calc') {
+      strategy = '本题为计算求解题。求解核心在于厘清题设条件与运算目标，选用恰当的代数恒等变形、微积分求导/积分法则或矩阵变换方法，注意运算符号与边界约束。';
+    } else if (qType === 'proof') {
+      strategy = '本题为严格证明题。建议从已知条件与相关定理的充要关系切入，可采用直接推导、构造反例反证法、或构造辅助函数/向量空间进行严密论证。';
+    } else if (qType === 'choice') {
+      strategy = '本题为单项选择题。解题时除常规严谨推演外，可灵活运用代入特殊值法、排除极端条件、反例验证或量纲检验等技巧快速突破。';
+    } else if (qType === 'blank') {
+      strategy = '本题为精准填空题。计算时需格外注重符号、定义域、区间开闭以及分母不为零等细节，保证最终解析表达式或数值的最简形式。';
+    } else {
+      strategy = '本题重点考查基础概念的综合运用与逻辑分析能力。请回顾教材相关章节的核心定理定义与典型例题解法。';
+    }
+
+    const kpsStr = q.kps && q.kps.length > 0 ? `本题关联考点：<strong>${q.kps.map((k) => this.esc(k)).join('、')}</strong>。` : '';
+    const secStr = q.sec_title || q.sec ? `建议对照复习章节 <em>${this.esc(q.sec_title || q.sec || '')}</em> 的核心定理与推论。` : '';
+
+    return `<p>${strategy}</p>${kpsStr || secStr ? `<p class="ex-hint-sub">${kpsStr} ${secStr}</p>` : ''}`;
   }
 
   private handleOptionSelect(qid: string, userKey: string) {
@@ -1648,15 +1840,33 @@ class ExerciseCenterController {
     if (btn) btn.textContent = record.revealedSolution ? '收起解析' : '查看解析';
     const icon = card.querySelector('.ex-toggle-steps-btn md-icon');
     if (icon) icon.textContent = record.revealedSolution ? 'visibility_off' : 'visibility';
+    const btnEl = card.querySelector('.ex-toggle-steps-btn');
+    if (btnEl) btnEl.classList.toggle('active', record.revealedSolution);
   }
 
   private toggleHints(qid: string) {
     const card = this.bodyContainer?.querySelector(`#q-card-${qid}`);
     if (!card) return;
-    const solBox = card.querySelector(`#sol-${qid}`);
-    if (!solBox) return;
-    this.ensureSolutionBoxRendered(qid, solBox);
-    solBox.classList.toggle('hidden');
+    const hintsBox = card.querySelector(`#hints-${qid}`);
+    if (!hintsBox) return;
+
+    if (!hintsBox.hasChildNodes()) {
+      const q = this.currentFilteredQuestions.find((item) => item.id === qid);
+      if (q) {
+        hintsBox.innerHTML = this.renderHintsBoxContent(q);
+        try {
+          renderMathInElement(hintsBox as HTMLElement, KATEX_OPTIONS);
+        } catch (e) {}
+      }
+    }
+
+    const isHidden = hintsBox.classList.contains('hidden');
+    hintsBox.classList.toggle('hidden', !isHidden);
+
+    const btn = card.querySelector('.ex-toggle-hints-btn');
+    if (btn) {
+      btn.classList.toggle('active', isHidden);
+    }
   }
 
   private toggleMaster(qid: string) {
@@ -1852,7 +2062,31 @@ $$
         const errInfo = parseAiError(err);
         if (statusEl) statusEl.textContent = `推导中断: ${errInfo.title}`;
         if (contentEl && !accumulatedMd) {
-          contentEl.innerHTML = `<div class="ex-ai-error"><strong>${errInfo.title}</strong><br/>${errInfo.message}</div>`;
+          contentEl.innerHTML = `
+            <div class="ex-ai-error-box">
+              <div class="ex-ai-error-header">
+                <md-icon class="ex-ai-error-icon">error_outline</md-icon>
+                <div class="ex-ai-error-meta">
+                  <strong>${this.esc(errInfo.title)}</strong>
+                  <p class="ex-ai-error-desc">${this.esc(errInfo.message)}</p>
+                </div>
+              </div>
+              <div class="ex-ai-error-actions">
+                <button type="button" class="ex-action-btn" data-action="open-ai-settings" data-qid="${qid}">
+                  <md-icon class="ex-btn-mdicon">settings</md-icon>
+                  <span>检查模型与网络设置</span>
+                </button>
+                <button type="button" class="ex-action-btn" data-action="bridge-ai-chat" data-qid="${qid}">
+                  <md-icon class="ex-btn-mdicon">forum</md-icon>
+                  <span>转入全局 AI 对话问答</span>
+                </button>
+                <button type="button" class="ex-action-btn" data-action="retry-ai" data-qid="${qid}">
+                  <md-icon class="ex-btn-mdicon">refresh</md-icon>
+                  <span>重试推导</span>
+                </button>
+              </div>
+            </div>
+          `;
         }
       }
       if (stopBtn) stopBtn.classList.add('hidden');
@@ -1979,11 +2213,42 @@ $$
     const card = this.bodyContainer?.querySelector(`#q-card-${qid}`);
     const input = card?.querySelector('.ex-ai-key-input') as HTMLInputElement;
     if (input && input.value.trim()) {
-      saveAiApiKey(getActiveAiModel().id, input.value.trim());
+      const activeProvider = getAiProvider();
+      saveProviderApiKey(activeProvider.id, input.value.trim());
       card?.querySelector(`#ai-key-config-${qid}`)?.classList.add('hidden');
       this.showToast('API Key 保存成功');
-      this.handleAskAi(qid);
+      this.handleAskAi(qid, true);
+    } else {
+      this.showToast('请输入有效的 API Key');
     }
+  }
+
+  private openAiSettings() {
+    this.close();
+    window.dispatchEvent(
+      new CustomEvent('astrolib:open-settings', {
+        detail: {
+          section: 'ai',
+        },
+      })
+    );
+  }
+
+  private bridgeToAiChat(qid: string) {
+    const q = this.currentFilteredQuestions.find((item) => item.id === qid);
+    if (!q) return;
+
+    const prompt = `请对以下题目给出极为规范、详尽的推导过程与标准解法：\n\n【来源】：${q.source || `${q.paper_title || ''}（第 ${q.paper_q_num || ''} 题）`}\n【题目】：\n${q.stem_raw}\n${q.options && q.options.length ? `\n选项：\n${q.options.map((o) => `${o.key}. ${o.text_raw}`).join('\n')}` : ''}${q.answer ? `\n参考结果：${q.answer}` : ''}`;
+
+    this.close();
+    window.dispatchEvent(
+      new CustomEvent('aiask:query', {
+        detail: {
+          prompt,
+          autoSubmit: true,
+        },
+      })
+    );
   }
 
   private bindSubmodalEvents() {

@@ -111,8 +111,23 @@ class ExerciseDbClient {
         return Array.isArray(data) ? data : [];
       }
     } catch (err) {
-      // 离线环境 fallback 到 LocalStorage
+      // 离线/静态生产环境 fallback
     }
+
+    // 2.5 静态构建部署环境 fallback：读取 public 预置社区题解
+    try {
+      const staticRes = await fetch('/data/exercises/community_ai_solutions.json');
+      if (staticRes.ok) {
+        const allSolutions = await staticRes.json();
+        if (Array.isArray(allSolutions)) {
+          const matched = allSolutions.filter((s) => s.question_id === questionId);
+          if (matched.length > 0) return matched;
+        } else if (allSolutions && typeof allSolutions === 'object') {
+          const matched = (allSolutions as Record<string, CommunityAiSolution[]>)[questionId];
+          if (Array.isArray(matched) && matched.length > 0) return matched;
+        }
+      }
+    } catch {}
 
     // 3. LocalStorage 离线降级
     return this.getLocalSolutions(questionId);

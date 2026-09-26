@@ -46,7 +46,7 @@ export const EXERCISE_BANKS: ExerciseBank[] = [
     id: 'bupt_math',
     title: '大邮数学集',
     sourceType: 'exam',
-    applicableBooks: ['engineering_analysis'],
+    applicableBooks: ['engineering_analysis', 'linear_algebra_geometry'],
     license: {
       spdx: 'CC-BY-NC-SA 4.0',
       shortName: 'CC-BY-NC-SA 4.0',
